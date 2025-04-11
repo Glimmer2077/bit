@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="referrer" content="no-referrer">
-    <title>八位堂IP战略规划</title>
+    <title>八位堂 IP 策略</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/preline@1.9.0/dist/preline.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -80,6 +79,21 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
+        .image-container {
+            overflow: hidden;
+            border-radius: 8px;
+        }
+        
+        .image-container img {
+            transition: transform 0.5s ease;
+            width: 100%;
+            height: auto;
+        }
+        
+        .image-container:hover img {
+            transform: scale(1.05);
+        }
+        
         /* 密码弹窗样式 */
         .password-modal {
             position: fixed;
@@ -103,331 +117,341 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
         
-        .content-hidden {
+        .hidden {
             display: none;
         }
         
-        /* 图片样式 */
-        .brand-image {
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-            max-width: 100%;
-            height: auto;
-        }
-        
-        .brand-image:hover {
-            transform: scale(1.05);
-        }
-        
-        /* 自定义滚动条 */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 10px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: #555;
+        /* 修复图片防盗链问题 */
+        img {
+            object-fit: cover;
         }
     </style>
 </head>
 <body class="light">
     <!-- 密码弹窗 -->
-    <div class="password-modal" id="passwordModal">
-        <div class="password-container text-center">
-            <h2 class="text-2xl font-bold mb-4 text-gray-800">请输入访问密码</h2>
-            <p class="text-gray-600 mb-4">此内容需要密码才能查看</p>
+    <div id="passwordModal" class="password-modal">
+        <div class="password-container">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">请输入访问密码</h2>
+            <p class="text-gray-600 mb-4">此内容受密码保护，请输入正确的密码继续访问。</p>
             <input type="password" id="passwordInput" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4" placeholder="请输入密码">
-            <button id="submitPassword" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-all">确认</button>
+            <button id="submitPassword" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-300">确认</button>
             <p id="passwordError" class="text-red-500 mt-2 hidden">密码错误，请重试</p>
         </div>
     </div>
 
-    <!-- 主要内容区域 -->
-    <div id="mainContent" class="content-hidden">
-        <!-- 导航栏 -->
-        <nav class="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-50">
-            <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-                <div class="flex items-center space-x-2">
-                    <i class="fas fa-gamepad text-2xl text-blue-600 dark:text-blue-400"></i>
-                    <h1 class="text-xl font-bold text-gray-800 dark:text-white">八位堂IP战略规划</h1>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <button id="themeToggle" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-                        <i class="fas fa-moon text-gray-600 dark:text-gray-300 dark:hidden"></i>
-                        <i class="fas fa-sun text-yellow-400 hidden dark:block"></i>
+    <!-- 主内容区域 -->
+    <div id="mainContent" class="hidden">
+        <header class="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-12">
+            <div class="container mx-auto px-4">
+                <div class="flex justify-between items-center">
+                    <h1 class="text-3xl md:text-4xl font-bold">八位堂 IP 策略</h1>
+                    <button id="themeToggle" class="p-2 rounded-full bg-white/20 hover:bg-white/30 transition">
+                        <i class="fas fa-moon text-white"></i>
                     </button>
+                </div>
+                <p class="mt-4 text-xl opacity-90">打造有情感连接的游戏外设品牌 IP</p>
+            </div>
+        </header>
+
+        <nav class="sticky top-0 bg-white dark:bg-gray-800 shadow-md z-50">
+            <div class="container mx-auto px-4">
+                <div class="flex justify-between items-center py-4">
+                    <div class="text-lg font-semibold text-gray-800 dark:text-white">八位堂 IP</div>
+                    <div class="flex space-x-6">
+                        <a href="#part1" class="text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition">品牌审视</a>
+                        <a href="#part2" class="text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition">IP战略</a>
+                        <a href="#part3" class="text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition">品牌与IP分离</a>
+                        <a href="#part4" class="text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition">运营规划</a>
+                        <a href="#part5" class="text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition">最终目标</a>
+                    </div>
                 </div>
             </div>
         </nav>
 
-        <!-- 目录导航 -->
-        <div class="bg-gray-100 dark:bg-gray-700 py-3 sticky top-14 z-40 shadow-sm">
-            <div class="container mx-auto px-4">
-                <div class="flex flex-wrap items-center justify-start gap-4 text-sm">
-                    <a href="#part1" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center">
-                        <i class="fas fa-search mr-1"></i> 品牌审视与现状诊断
-                    </a>
-                    <a href="#part2" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center">
-                        <i class="fas fa-anchor mr-1"></i> IP战略锚点
-                    </a>
-                    <a href="#part3" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center">
-                        <i class="fas fa-code-branch mr-1"></i> 品牌与IP形象分离
-                    </a>
-                    <a href="#part4" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center">
-                        <i class="fas fa-calendar-alt mr-1"></i> 长期运营规划
-                    </a>
-                    <a href="#part5" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center">
-                        <i class="fas fa-flag-checkered mr-1"></i> 最终目标
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- 主要内容 -->
         <main class="container mx-auto px-4 py-8">
-            <!-- 第1部分 -->
+            <!-- 第1部分：品牌审视与现状诊断 -->
             <section id="part1" class="mb-16 fade-in">
                 <div class="flex items-center mb-6">
-                    <i class="fas fa-compass text-3xl text-blue-600 dark:text-blue-400 mr-3"></i>
-                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white section-title">第1部分：品牌审视与现状诊断</h2>
+                    <i class="fas fa-compass text-3xl text-blue-600 mr-3"></i>
+                    <h2 class="text-2xl md:text-3xl font-bold section-title">第1部分：品牌审视与现状诊断</h2>
                 </div>
                 
-                <div class="grid md:grid-cols-2 gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
                     <div class="card bg-white dark:bg-gray-800 p-6">
-                        <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
-                            <i class="fas fa-gem text-blue-500 mr-2"></i>
-                            1.1 八位堂品牌核心价值是什么？
+                        <h3 class="text-xl font-semibold mb-4 flex items-center">
+                            <i class="fas fa-bullseye text-blue-500 mr-2"></i>
+                            八位堂品牌核心价值
                         </h3>
-                        <ul class="space-y-3 text-gray-700 dark:text-gray-300">
+                        <ul class="space-y-3">
                             <li class="flex items-start">
-                                <i class="fas fa-circle text-xs text-blue-500 mt-1.5 mr-2"></i>
+                                <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
                                 <span>设计感强（有美学标准，偏极简或复古潮流）</span>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-circle text-xs text-blue-500 mt-1.5 mr-2"></i>
+                                <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
                                 <span>品控严谨，属于高质量硬件玩家</span>
                             </li>
                         </ul>
                     </div>
                     
                     <div class="card bg-white dark:bg-gray-800 p-6">
-                        <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
+                        <h3 class="text-xl font-semibold mb-4 flex items-center">
                             <i class="fas fa-users text-blue-500 mr-2"></i>
-                            1.2 当前用户是哪些人？他们怎么看八位堂？
+                            当前用户画像
                         </h3>
-                        <p class="text-gray-700 dark:text-gray-300 mb-3">PC和主机玩游戏的Z世代年轻人，属于"硬核+有审美"的游戏人群</p>
-                        <p class="text-gray-700 dark:text-gray-300">他们更看重八位堂的哪一点：设计感、手感、品牌调性</p>
+                        <p class="mb-3">PC和主机玩游戏的Z世代年轻人，属于"硬核+有审美"的游戏人群</p>
+                        <p class="font-medium">他们更看重八位堂的哪一点：</p>
+                        <div class="flex flex-wrap gap-2 mt-2">
+                            <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full">设计感</span>
+                            <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full">手感</span>
+                            <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full">品牌调性</span>
+                        </div>
                     </div>
-                    
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
                     <div class="card bg-white dark:bg-gray-800 p-6">
-                        <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
+                        <h3 class="text-xl font-semibold mb-4 flex items-center">
                             <i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>
-                            1.3 品牌现在最大的问题/挑战是什么？
+                            品牌最大的问题/挑战
                         </h3>
-                        <ul class="space-y-3 text-gray-700 dark:text-gray-300">
+                        <ul class="space-y-3">
                             <li class="flex items-start">
-                                <i class="fas fa-circle text-xs text-yellow-500 mt-1.5 mr-2"></i>
+                                <i class="fas fa-circle text-red-500 text-xs mt-1.5 mr-2"></i>
                                 <span>八位堂知名度不错，但缺乏"情感连接点"</span>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-circle text-xs text-yellow-500 mt-1.5 mr-2"></i>
+                                <i class="fas fa-circle text-red-500 text-xs mt-1.5 mr-2"></i>
                                 <span>市面上越来越多"手柄美学"新品牌，开始抢话语权</span>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-circle text-xs text-yellow-500 mt-1.5 mr-2"></i>
+                                <i class="fas fa-circle text-red-500 text-xs mt-1.5 mr-2"></i>
                                 <span>硬件做得漂亮，但和用户之间缺少"陪伴感"、"认同感"、"个性表达"的情绪接口</span>
                             </li>
                         </ul>
                     </div>
                     
                     <div class="card bg-white dark:bg-gray-800 p-6">
-                        <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
-                            <i class="fas fa-chart-line text-blue-500 mr-2"></i>
-                            1.4 市场位置&竞争品牌有哪些？
+                        <h3 class="text-xl font-semibold mb-4 flex items-center">
+                            <i class="fas fa-chart-line text-purple-500 mr-2"></i>
+                            市场位置 & 竞争品牌
                         </h3>
                         <div class="grid grid-cols-3 gap-4 mb-4">
-                            <div class="text-center">
-                                <img src="https://images.weserv.nl/?url=pics0.baidu.com/feed/42a98226cffc1e1718fd991232842109738de976.jpeg" alt="飞智" class="brand-image mx-auto mb-2">
-                                <p class="text-gray-700 dark:text-gray-300 font-medium">飞智</p>
+                            <div class="image-container">
+                                <img src="https://pics0.baidu.com/feed/42a98226cffc1e1718fd991232842109738de976.jpeg@f_auto?token=995efdc68bf1c5d24b7365a9c8ad2431" alt="飞智" class="rounded">
+                                <p class="text-center mt-2 font-medium">飞智</p>
                             </div>
-                            <div class="text-center">
-                                <img src="https://images.weserv.nl/?url=doc.xiaoji.com/uploads/2025/01/07/5116b9fc7905d5291117408030c196bc.png" alt="小鸡" class="brand-image mx-auto mb-2">
-                                <p class="text-gray-700 dark:text-gray-300 font-medium">小鸡</p>
+                            <div class="image-container">
+                                <img src="https://doc.xiaoji.com/uploads/2025/01/07/5116b9fc7905d5291117408030c196bc.png" alt="小鸡" class="rounded">
+                                <p class="text-center mt-2 font-medium">小鸡</p>
                             </div>
-                            <div class="text-center">
-                                <img src="https://images.weserv.nl/?url=q4.itc.cn/q_70/images03/20250101/68ce0106d4aa43e8a14cb6fe9589d188.jpeg" alt="北通" class="brand-image mx-auto mb-2">
-                                <p class="text-gray-700 dark:text-gray-300 font-medium">北通</p>
+                            <div class="image-container">
+                                <img src="https://q4.itc.cn/q_70/images03/20250101/68ce0106d4aa43e8a14cb6fe9589d188.jpeg" alt="北通" class="rounded">
+                                <p class="text-center mt-2 font-medium">北通</p>
                             </div>
                         </div>
-                        <p class="text-gray-700 dark:text-gray-300 mb-3">飞智 / 小鸡 / 北通 ——这些品牌在手感、功能战上竞争激烈，但在IP形象与用户连接上仍属空白，是我们可抢占的突破口</p>
-                        <div class="space-y-3 text-gray-700 dark:text-gray-300">
-                            <p><span class="font-semibold">IP形象：</span>他们虽有IP，但不是一个有情绪、有梗、能说话的游戏外设角色IP</p>
-                            <p><span class="font-semibold">用户互动：</span>飞智偏技术，小鸡偏潮玩，北通偏功能性；八位堂可以强调"陪伴+表达+美学"，打造与玩家情绪共振的玩伴型IP</p>
+                        <p class="text-sm">飞智 / 小鸡 / 北通 ——这些品牌在手感、功能战上竞争激烈，但在IP形象与用户连接上仍属空白，是我们可抢占的突破口</p>
+                        
+                        <div class="mt-4 space-y-3">
+                            <div>
+                                <span class="font-medium">IP形象：</span>
+                                <span>他们虽有IP，但不是一个有情绪、有梗、能说话的游戏外设角色IP</span>
+                            </div>
+                            <div>
+                                <span class="font-medium">用户互动：</span>
+                                <span>飞智偏技术，小鸡偏潮玩，北通偏功能性；八位堂可以强调"陪伴+表达+美学"，打造与玩家情绪共振的玩伴型IP</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/30 rounded-lg">
                             <p>目前的游戏外设市场中，真正有人格表达的品牌角色几乎是空白区。</p>
-                            <p>如果八位堂通过打造一个"懂玩家、会吐槽、有文化属性"的角色，不仅可以弥补品牌和用户之间的情感连接，还能打穿内容营销与社交传播双通路。</p>
+                            <p class="mt-2">如果八位堂通过打造一个"懂玩家、会吐槽、有文化属性"的角色，不仅可以弥补品牌和用户之间的情感连接，还能打穿内容营销与社交传播双通路。</p>
                         </div>
                     </div>
                 </div>
             </section>
             
-            <!-- 第2部分 -->
+            <!-- 第2部分：IP战略锚点 -->
             <section id="part2" class="mb-16 fade-in">
                 <div class="flex items-center mb-6">
-                    <i class="fas fa-anchor text-3xl text-purple-600 dark:text-purple-400 mr-3"></i>
-                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white section-title">第2部分：IP战略锚点</h2>
+                    <i class="fas fa-lightbulb text-3xl text-yellow-500 mr-3"></i>
+                    <h2 class="text-2xl md:text-3xl font-bold section-title">第2部分：IP战略锚点</h2>
                 </div>
                 
                 <div class="card bg-white dark:bg-gray-800 p-6 mb-8">
-                    <p class="text-gray-700 dark:text-gray-300 mb-4">一个替八位堂发声、吐槽、耍帅、陪打游戏的拟人化IP形象，陪着用户"一起玩"、"一起疯"。</p>
+                    <p class="text-lg">一个替八位堂发声、吐槽、耍帅、陪打游戏的拟人化IP形象，陪着用户"一起玩"、"一起疯"。</p>
                     
-                    <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                         <div class="flex items-start">
-                            <i class="fas fa-mobile-alt text-purple-500 text-xl mr-3 mt-1"></i>
+                            <i class="fas fa-mobile-alt text-blue-500 text-2xl mt-1 mr-3"></i>
                             <div>
-                                <h4 class="font-semibold text-gray-800 dark:text-white mb-2">内容载体</h4>
-                                <p class="text-gray-700 dark:text-gray-300">表情包、短视频出镜、语录、虚拟形象做表态</p>
+                                <h4 class="font-semibold text-lg">内容载体</h4>
+                                <p>表情包、短视频出镜、语录、虚拟形象做表态</p>
                             </div>
                         </div>
                         <div class="flex items-start">
-                            <i class="fas fa-shopping-bag text-purple-500 text-xl mr-3 mt-1"></i>
+                            <i class="fas fa-shopping-bag text-pink-500 text-2xl mt-1 mr-3"></i>
                             <div>
-                                <h4 class="font-semibold text-gray-800 dark:text-white mb-2">商业化载体</h4>
-                                <p class="text-gray-700 dark:text-gray-300">做联名手柄、贴纸、键帽、服饰，甚至出"周边包"都行</p>
+                                <h4 class="font-semibold text-lg">商业化载体</h4>
+                                <p>做联名手柄、贴纸、键帽、服饰，甚至出"周边包"都行</p>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="bg-purple-50 dark:bg-purple-900/30 p-4 rounded-lg">
-                        <h4 class="font-semibold text-gray-800 dark:text-white mb-2 flex items-center">
-                            <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
-                            举例：Bit酱
-                        </h4>
-                        <p class="text-gray-700 dark:text-gray-300 mb-2"><span class="font-medium">性格：</span>酷帅+毒舌、沙雕+聪明、治愈+中性萌</p>
-                        <p class="text-gray-700 dark:text-gray-300"><span class="font-medium">参考：</span>LINE FRIENDS、Loopy、Jellycat、薯队长</p>
+                    <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
+                        <h4 class="font-semibold text-lg mb-2">举例：Bit酱</h4>
+                        <div class="flex flex-wrap gap-3">
+                            <div class="flex items-center">
+                                <span class="font-medium mr-2">性格：</span>
+                                <span class="px-3 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded-full">酷帅+毒舌</span>
+                                <span class="px-3 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-full ml-2">沙雕+聪明</span>
+                                <span class="px-3 py-1 bg-pink-100 dark:bg-pink-900 text-pink-800 dark:text-pink-200 rounded-full ml-2">治愈+中性萌</span>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <span class="font-medium">参考：</span>
+                            <span>LINE FRIENDS、Loopy、Jellycat、薯队长</span>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="grid md:grid-cols-3 gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- 动物拟人 -->
                     <div class="card bg-white dark:bg-gray-800 p-6">
                         <div class="flex items-center mb-4">
-                            <i class="fas fa-lightbulb text-yellow-500 text-xl mr-2"></i>
-                            <h3 class="text-xl font-semibold text-gray-800 dark:text-white">1. 动物拟人 = 最低传播门槛 + 最高亲和度</h3>
+                            <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center mr-3">
+                                <i class="fas fa-paw text-blue-600 dark:text-blue-400"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold">1. 动物拟人</h3>
                         </div>
-                        <p class="text-gray-700 dark:text-gray-300 mb-4">可爱动物形象是跨年龄、跨圈层的通用型符号，无需过度解释即可引发好感。</p>
-                        <h4 class="font-semibold text-gray-800 dark:text-white mb-2">案例支撑：</h4>
+                        <p class="text-blue-600 dark:text-blue-400 font-medium">最低传播门槛 + 最高亲和度</p>
+                        <p class="mt-3">可爱动物形象是跨年龄、跨圈层的通用型符号，无需过度解释即可引发好感。</p>
                         
+                        <h4 class="font-medium mt-4 mb-2">案例支撑：</h4>
                         <div class="space-y-4">
                             <div>
-                                <p class="text-gray-700 dark:text-gray-300 mb-2">Loopy：粉色河狸，成功融入"阴阳怪气+撒娇式发疯"的表达情绪主阵地，成功出圈</p>
-                                <img src="https://images.weserv.nl/?url=file.digitaling.com/eImg/uimages/20230809/1691576917299741.jpg" alt="Loopy" class="brand-image w-full">
+                                <div class="image-container mb-2">
+                                    <img src="https://file.digitaling.com/eImg/uimages/20230809/1691576917299741.jpg" alt="Loopy" class="rounded">
+                                </div>
+                                <p><span class="font-medium">Loopy：</span>粉色河狸，成功融入"阴阳怪气+撒娇式发疯"的表达情绪主阵地，成功出圈</p>
                             </div>
                             <div>
-                                <p class="text-gray-700 dark:text-gray-300 mb-2">LINE FRIENDS中的莎莉、可妮兔：情绪表达直接、动作大、具备极强可模仿性</p>
-                                <img src="https://images.weserv.nl/?url=file.digitaling.com/eImg/uimages/20230727/1690426838840610.png" alt="LINE FRIENDS" class="brand-image w-full">
+                                <div class="image-container mb-2">
+                                    <img src="https://file.digitaling.com/eImg/uimages/20230727/1690426838840610.png" alt="LINE FRIENDS" class="rounded">
+                                </div>
+                                <p><span class="font-medium">LINE FRIENDS中的莎莉、可妮兔：</span>情绪表达直接、动作大、具备极强可模仿性</p>
                             </div>
                         </div>
                     </div>
                     
+                    <!-- 表情丰富 -->
                     <div class="card bg-white dark:bg-gray-800 p-6">
                         <div class="flex items-center mb-4">
-                            <i class="fas fa-theater-masks text-green-500 text-xl mr-2"></i>
-                            <h3 class="text-xl font-semibold text-gray-800 dark:text-white">2. 表情丰富 = 社交表情包 & 贴纸应用力超强</h3>
+                            <div class="w-10 h-10 rounded-full bg-yellow-100 dark:bg-yellow-900 flex items-center justify-center mr-3">
+                                <i class="fas fa-laugh-beam text-yellow-600 dark:text-yellow-400"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold">2. 表情丰富</h3>
                         </div>
-                        <p class="text-gray-700 dark:text-gray-300 mb-4">能让用户"表情化地使用角色"是IP成功的第一步，尤其在微信、小红书、抖音的内容表达中。</p>
-                        <h4 class="font-semibold text-gray-800 dark:text-white mb-2">案例支撑：</h4>
+                        <p class="text-yellow-600 dark:text-yellow-400 font-medium">社交表情包 & 贴纸应用力超强</p>
+                        <p class="mt-3">能让用户"表情化地使用角色"是IP成功的第一步，尤其在微信、小红书、抖音的内容表达中。</p>
                         
+                        <h4 class="font-medium mt-4 mb-2">案例支撑：</h4>
                         <div class="space-y-4">
                             <div>
-                                <p class="text-gray-700 dark:text-gray-300 mb-2">悲伤蛙 × 探鱼：表情包+炸裂话语体系结合，形成爆款"饭搭子"人格IP，助力品牌事件出圈</p>
-                                <img src="https://images.weserv.nl/?url=file.digitaling.com/eImg/uimages/20231228/1703745229984176.png" alt="悲伤蛙 × 探鱼" class="brand-image w-full">
+                                <div class="image-container mb-2">
+                                    <img src="https://file.digitaling.com/eImg/uimages/20231228/1703745229984176.png" alt="悲伤蛙 × 探鱼" class="rounded">
+                                </div>
+                                <p><span class="font-medium">悲伤蛙 × 探鱼：</span>表情包+炸裂话语体系结合，形成爆款"饭搭子"人格IP，助力品牌事件出圈</p>
                             </div>
                             <div>
-                                <p class="text-gray-700 dark:text-gray-300 mb-2">Jellycat玩偶：通过"不稳定精神状态"拟人表达，引发"共疯型情绪共鸣"</p>
-                                <img src="https://images.weserv.nl/?url=file.digitaling.com/eImg/uimages/20230614/remote_168673642251671.jpg" alt="Jellycat玩偶" class="brand-image w-full">
+                                <div class="image-container mb-2">
+                                    <img src="https://file.digitaling.com/eImg/uimages/20230614/remote_168673642251671.jpg" alt="Jellycat玩偶" class="rounded">
+                                </div>
+                                <p><span class="font-medium">Jellycat玩偶：</span>通过"不稳定精神状态"拟人表达，引发"共疯型情绪共鸣"</p>
                             </div>
                         </div>
                     </div>
                     
+                    <!-- 语言多变 -->
                     <div class="card bg-white dark:bg-gray-800 p-6">
                         <div class="flex items-center mb-4">
-                            <i class="fas fa-microphone-alt text-red-500 text-xl mr-2"></i>
-                            <h3 class="text-xl font-semibold text-gray-800 dark:text-white">3. 语言多变 = 高黏性人格IP的灵魂内核</h3>
+                            <div class="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center mr-3">
+                                <i class="fas fa-comments text-green-600 dark:text-green-400"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold">3. 语言多变</h3>
                         </div>
-                        <p class="text-gray-700 dark:text-gray-300 mb-4">可以切换情绪表达（撒娇/毒舌/暴躁/佛系），让用户代入时产生"她说出了我没说出来的话"的共鸣。</p>
-                        <h4 class="font-semibold text-gray-800 dark:text-white mb-2">案例支撑：</h4>
+                        <p class="text-green-600 dark:text-green-400 font-medium">高黏性人格IP的灵魂内核</p>
+                        <p class="mt-3">可以切换情绪表达（撒娇/毒舌/暴躁/佛系），让用户代入时产生"她说出了我没说出来的话"的共鸣。</p>
                         
+                        <h4 class="font-medium mt-4 mb-2">案例支撑：</h4>
                         <div class="space-y-4">
                             <div>
-                                <p class="text-gray-700 dark:text-gray-300 mb-2">薯队长（小红书）：切换俏皮、疯言疯语、人本深情多种风格，打造Z世代最亲近的"官方人格"</p>
-                                <img src="https://images.weserv.nl/?url=file.digitaling.com/eImg/uimages/20241028/1730098690309709.jpg" alt="薯队长" class="brand-image w-full">
+                                <div class="image-container mb-2">
+                                    <img src="https://file.digitaling.com/eImg/uimages/20241028/1730098690309709.jpg" alt="薯队长" class="rounded">
+                                </div>
+                                <p><span class="font-medium">薯队长（小红书）：</span>切换俏皮、疯言疯语、人本深情多种风格，打造Z世代最亲近的"官方人格"</p>
                             </div>
                             <div>
-                                <p class="text-gray-700 dark:text-gray-300 mb-2">多儿（多邻国）：从"发疯催学习"到"突然感性落泪"，全网公认最有梗的拟人角色</p>
-                                <img src="https://images.weserv.nl/?url=file.digitaling.com/eImg/uimages/20241012/1728706049341136.jpg" alt="多儿" class="brand-image w-full">
+                                <div class="image-container mb-2">
+                                    <img src="https://file.digitaling.com/eImg/uimages/20241012/1728706049341136.jpg" alt="多儿" class="rounded">
+                                </div>
+                                <p><span class="font-medium">多儿（多邻国）：</span>从"发疯催学习"到"突然感性落泪"，全网公认最有梗的拟人角色</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
             
-            <!-- 第3部分 -->
+            <!-- 第3部分：品牌与IP形象分离 -->
             <section id="part3" class="mb-16 fade-in">
                 <div class="flex items-center mb-6">
-                    <i class="fas fa-code-branch text-3xl text-green-600 dark:text-green-400 mr-3"></i>
-                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white section-title">第3部分：品牌与IP形象分离</h2>
+                    <i class="fas fa-object-ungroup text-3xl text-purple-500 mr-3"></i>
+                    <h2 class="text-2xl md:text-3xl font-bold section-title">第3部分：品牌与IP形象分离</h2>
                 </div>
                 
                 <div class="card bg-white dark:bg-gray-800 p-6 mb-8">
-                    <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">成为一个独立人格体，不是品牌的"代言人"</h3>
+                    <p class="text-lg font-medium text-purple-600 dark:text-purple-400">成为一个独立人格体，不是品牌的"代言人"</p>
                 </div>
                 
-                <div class="grid md:grid-cols-2 gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div class="card bg-white dark:bg-gray-800 p-6">
-                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
-                            <i class="fas fa-question-circle text-green-500 mr-2"></i>
-                            1.为什么要品牌/IP分离？
+                        <h3 class="text-xl font-semibold mb-4 flex items-center">
+                            <i class="fas fa-question-circle text-red-500 mr-2"></i>
+                            为什么要品牌/IP分离？
                         </h3>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <h4 class="font-medium text-gray-800 dark:text-white mb-2">传统做法：</h4>
-                                <ul class="space-y-2 text-gray-700 dark:text-gray-300">
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                                <h4 class="font-medium mb-2">传统做法</h4>
+                                <ul class="space-y-2 text-sm">
                                     <li class="flex items-start">
-                                        <i class="fas fa-circle text-xs text-gray-500 mt-1.5 mr-2"></i>
+                                        <i class="fas fa-circle text-gray-400 text-xs mt-1.5 mr-2"></i>
                                         <span>品牌发言人，功能型、服务型（讲解、推荐）</span>
                                     </li>
                                     <li class="flex items-start">
-                                        <i class="fas fa-circle text-xs text-gray-500 mt-1.5 mr-2"></i>
+                                        <i class="fas fa-circle text-gray-400 text-xs mt-1.5 mr-2"></i>
                                         <span>只能活在产品和宣传中</span>
                                     </li>
                                     <li class="flex items-start">
-                                        <i class="fas fa-circle text-xs text-gray-500 mt-1.5 mr-2"></i>
+                                        <i class="fas fa-circle text-gray-400 text-xs mt-1.5 mr-2"></i>
                                         <span>用户是观众</span>
                                     </li>
                                 </ul>
                             </div>
-                            <div>
-                                <h4 class="font-medium text-gray-800 dark:text-white mb-2">我们的做法：</h4>
-                                <ul class="space-y-2 text-gray-700 dark:text-gray-300">
+                            
+                            <div class="p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
+                                <h4 class="font-medium mb-2">我们的做法</h4>
+                                <ul class="space-y-2 text-sm">
                                     <li class="flex items-start">
-                                        <i class="fas fa-circle text-xs text-green-500 mt-1.5 mr-2"></i>
+                                        <i class="fas fa-circle text-blue-500 text-xs mt-1.5 mr-2"></i>
                                         <span>IP是"人格体"，有喜怒哀乐、生活琐事、自己的语气和主张</span>
                                     </li>
                                     <li class="flex items-start">
-                                        <i class="fas fa-circle text-xs text-green-500 mt-1.5 mr-2"></i>
+                                        <i class="fas fa-circle text-blue-500 text-xs mt-1.5 mr-2"></i>
                                         <span>可以活在朋友圈、社交、UGC里</span>
                                     </li>
                                     <li class="flex items-start">
-                                        <i class="fas fa-circle text-xs text-green-500 mt-1.5 mr-2"></i>
+                                        <i class="fas fa-circle text-blue-500 text-xs mt-1.5 mr-2"></i>
                                         <span>用户是搭子、是CP粉、是父母粉</span>
                                     </li>
                                 </ul>
@@ -436,41 +460,43 @@
                     </div>
                     
                     <div class="card bg-white dark:bg-gray-800 p-6">
-                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
+                        <h3 class="text-xl font-semibold mb-4 flex items-center">
                             <i class="fas fa-user-friends text-green-500 mr-2"></i>
-                            2.社交角色定位
+                            社交角色定位
                         </h3>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <h4 class="font-medium text-gray-800 dark:text-white mb-2">它是…</h4>
-                                <ul class="space-y-2 text-gray-700 dark:text-gray-300">
-                                <li class="flex items-start">
-                                    <i class="fas fa-circle text-xs text-green-500 mt-1.5 mr-2"></i>
-                                    <span>玩家朋友圈里的表情大师</span>
-                                </li>
-                                <li class="flex items-start">
-                                    <i class="fas fa-circle text-xs text-green-500 mt-1.5 mr-2"></i>
-                                    <span>跟你一起吐槽bug的室友</span>
-                                </li>
-                                <li class="flex items-start">
-                                    <i class="fas fa-circle text-xs text-green-500 mt-1.5 mr-2"></i>
-                                    <span>发疯不打草稿的搭子</span>
-                                </li>
-                            </ul>
-                            </div>
-                            <div>
-                                <h4 class="font-medium text-gray-800 dark:text-white mb-2">不再是…</h4>
-                                <ul class="space-y-2 text-gray-700 dark:text-gray-300">
+                        
+                        <div class="grid grid-cols-1 gap-4">
+                            <div class="p-4 bg-green-50 dark:bg-green-900/30 rounded-lg">
+                                <h4 class="font-medium mb-2">它是…</h4>
+                                <ul class="space-y-2">
                                     <li class="flex items-start">
-                                        <i class="fas fa-circle text-xs text-red-500 mt-1.5 mr-2"></i>
+                                        <i class="fas fa-check text-green-500 mr-2"></i>
+                                        <span>玩家朋友圈里的表情大师</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check text-green-500 mr-2"></i>
+                                        <span>跟你一起吐槽bug的室友</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check text-green-500 mr-2"></i>
+                                        <span>发疯不打草稿的搭子</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div class="p-4 bg-red-50 dark:bg-red-900/30 rounded-lg">
+                                <h4 class="font-medium mb-2">不再是…</h4>
+                                <ul class="space-y-2">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-times text-red-500 mr-2"></i>
                                         <span>官方客服</span>
                                     </li>
                                     <li class="flex items-start">
-                                        <i class="fas fa-circle text-xs text-red-500 mt-1.5 mr-2"></i>
+                                        <i class="fas fa-times text-red-500 mr-2"></i>
                                         <span>品牌推广官</span>
                                     </li>
                                     <li class="flex items-start">
-                                        <i class="fas fa-circle text-xs text-red-500 mt-1.5 mr-2"></i>
+                                        <i class="fas fa-times text-red-500 mr-2"></i>
                                         <span>公关文案</span>
                                     </li>
                                 </ul>
@@ -479,57 +505,65 @@
                     </div>
                 </div>
                 
-                <div class="grid md:grid-cols-2 gap-8 mt-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
                     <div class="card bg-white dark:bg-gray-800 p-6">
-                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
-                            <i class="fas fa-cogs text-green-500 mr-2"></i>
-                            3.操作方式
+                        <h3 class="text-xl font-semibold mb-4 flex items-center">
+                            <i class="fas fa-cogs text-blue-500 mr-2"></i>
+                            操作方式
                         </h3>
-                        <ul class="space-y-3 text-gray-700 dark:text-gray-300">
+                        
+                        <ul class="space-y-3">
                             <li class="flex items-start">
-                                <i class="fas fa-check text-green-500 mr-2 mt-1"></i>
+                                <i class="fas fa-angle-right text-blue-500 mr-2 mt-1"></i>
                                 <span>开设独立账号和子栏目</span>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-check text-green-500 mr-2 mt-1"></i>
+                                <i class="fas fa-angle-right text-blue-500 mr-2 mt-1"></i>
                                 <span>可以独立发布内容，与品牌账号做"互动"而不是"归属"</span>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-check text-green-500 mr-2 mt-1"></i>
+                                <i class="fas fa-angle-right text-blue-500 mr-2 mt-1"></i>
                                 <span>强化IP人格感</span>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-check text-green-500 mr-2 mt-1"></i>
+                                <i class="fas fa-angle-right text-blue-500 mr-2 mt-1"></i>
                                 <span>让用户愿意互动，而非"为品牌站台"</span>
                             </li>
                         </ul>
                     </div>
                     
                     <div class="card bg-white dark:bg-gray-800 p-6">
-                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
+                        <h3 class="text-xl font-semibold mb-4 flex items-center">
                             <i class="fas fa-thumbs-up text-green-500 mr-2"></i>
-                            4.这套机制的好处
+                            这套机制的好处
                         </h3>
-                        <ul class="space-y-3 text-gray-700 dark:text-gray-300">
+                        
+                        <ul class="space-y-3">
                             <li class="flex items-start">
-                                <i class="fas fa-plus-circle text-green-500 mr-2 mt-1"></i>
+                                <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center mr-3 flex-shrink-0">
+                                    <i class="fas fa-film text-blue-600 dark:text-blue-400"></i>
+                                </div>
                                 <div>
-                                    <span class="font-medium">内容维度变多：</span>
-                                    <span>可以做表情包、漫画、Vlog、情绪语录、短剧，而不是只能讲产品</span>
+                                    <p class="font-medium">内容维度变多</p>
+                                    <p class="text-sm">可以做表情包、漫画、Vlog、情绪语录、短剧，而不是只能讲产品</p>
                                 </div>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-plus-circle text-green-500 mr-2 mt-1"></i>
+                                <div class="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center mr-3 flex-shrink-0">
+                                    <i class="fas fa-share-alt text-purple-600 dark:text-purple-400"></i>
+                                </div>
                                 <div>
-                                    <span class="font-medium">传播方式更轻：</span>
-                                    <span>用户转发、玩梗，不会觉得在给品牌"打广告"</span>
+                                    <p class="font-medium">传播方式更轻</p>
+                                    <p class="text-sm">用户转发、玩梗，不会觉得在给品牌"打广告"</p>
                                 </div>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-plus-circle text-green-500 mr-2 mt-1"></i>
+                                <div class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center mr-3 flex-shrink-0">
+                                    <i class="fas fa-dollar-sign text-green-600 dark:text-green-400"></i>
+                                </div>
                                 <div>
-                                    <span class="font-medium">商业路径更长：</span>
-                                    <span>IP可以独立出周边，甚至未来跨品牌联名</span>
+                                    <p class="font-medium">商业路径更长</p>
+                                    <p class="text-sm">IP可以独立出周边，甚至未来跨品牌联名</p>
                                 </div>
                             </li>
                         </ul>
@@ -537,211 +571,305 @@
                 </div>
             </section>
             
-            <!-- 第4部分 -->
+            <!-- 第4部分：长期运营规划 -->
             <section id="part4" class="mb-16 fade-in">
                 <div class="flex items-center mb-6">
-                    <i class="fas fa-calendar-alt text-3xl text-orange-600 dark:text-orange-400 mr-3"></i>
-                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white section-title">第4部分：长期运营规划</h2>
+                    <i class="fas fa-calendar-alt text-3xl text-green-500 mr-3"></i>
+                    <h2 class="text-2xl md:text-3xl font-bold section-title">第4部分：长期运营规划</h2>
                 </div>
                 
-                <div class="grid md:grid-cols-2 gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                     <div class="card bg-white dark:bg-gray-800 p-6">
-                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
-                            <i class="fas fa-stream text-orange-500 mr-2"></i>
-                            1.常态化内容："Bit酱的日常生活"
+                        <h3 class="text-xl font-semibold mb-4 flex items-center">
+                            <i class="fas fa-stream text-blue-500 mr-2"></i>
+                            常态化内容
                         </h3>
-                        <div class="bg-orange-50 dark:bg-orange-900/30 p-4 rounded-lg">
-                            <p class="text-gray-700 dark:text-gray-300">表情包/漫画/朋友圈/贴纸/语录初上线</p>
+                        
+                        <div class="p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
+                            <h4 class="font-medium mb-2">"Bit酱的日常生活"</h4>
+                            <p>表情包/漫画/朋友圈/贴纸/语录初上线</p>
                         </div>
                     </div>
                     
                     <div class="card bg-white dark:bg-gray-800 p-6">
-                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
-                            <i class="fas fa-tasks text-orange-500 mr-2"></i>
-                            2.实操（省成本版）
+                        <h3 class="text-xl font-semibold mb-4 flex items-center">
+                            <i class="fas fa-tasks text-purple-500 mr-2"></i>
+                            实操（省成本版）
                         </h3>
-                        <ul class="space-y-3 text-gray-700 dark:text-gray-300">
-                            <li class="flex items-start">
-                                <span class="text-orange-500 font-medium mr-2">a.</span>
-                                <span>由ai生成形象，筛选终稿</span>
+                        
+                        <ol class="space-y-3 list-decimal pl-5">
+                            <li>由ai生成形象，筛选终稿</li>
+                            <li>根据终稿，由ai生成表情包、漫画等素材</li>
+                            <li>分发渠道：公众号、小红书、B站</li>
+                            <li>每月沉淀用户反馈 + 数据复盘</li>
+                        </ol>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                    <div class="card bg-white dark:bg-gray-800 p-6">
+                        <h3 class="text-xl font-semibold mb-4 flex items-center">
+                            <i class="fas fa-bullhorn text-yellow-500 mr-2"></i>
+                            传播增强机制
+                        </h3>
+                        
+                        <ul class="space-y-3">
+                            <li class="flex items-center">
+                                <i class="fas fa-fire text-red-500 mr-2"></i>
+                                <span>热点追踪</span>
                             </li>
-                            <li class="flex items-start">
-                                <span class="text-orange-500 font-medium mr-2">b.</span>
-                                <span>根据终稿，由ai生成表情包、漫画等素材</span>
+                            <li class="flex items-center">
+                                <i class="fas fa-calendar-day text-blue-500 mr-2"></i>
+                                <span>月度主题（生日）日</span>
                             </li>
-                            <li class="flex items-start">
-                                <span class="text-orange-500 font-medium mr-2">c.</span>
-                                <span>分发渠道：公众号、小红书、B站</span>
-                            </li>
-                            <li class="flex items-start">
-                                <span class="text-orange-500 font-medium mr-2">d.</span>
-                                <span>每月沉淀用户反馈 + 数据复盘</span>
+                            <li class="flex items-center">
+                                <i class="fas fa-users text-green-500 mr-2"></i>
+                                <span>UGC话题</span>
                             </li>
                         </ul>
                     </div>
                     
                     <div class="card bg-white dark:bg-gray-800 p-6">
-                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
-                            <i class="fas fa-bullhorn text-orange-500 mr-2"></i>
-                            3.传播增强机制
+                        <h3 class="text-xl font-semibold mb-4 flex items-center">
+                            <i class="fas fa-store text-purple-500 mr-2"></i>
+                            商业化尝试
                         </h3>
-                        <div class="flex flex-wrap gap-3">
-                            <span class="bg-orange-100 dark:bg-orange-900/50 text-orange-800 dark:text-orange-200 px-3 py-1 rounded-full text-sm">热点追踪</span>
-                            <span class="bg-orange-100 dark:bg-orange-900/50 text-orange-800 dark:text-orange-200 px-3 py-1 rounded-full text-sm">月度主题（生日）日</span>
-                            <span class="bg-orange-100 dark:bg-orange-900/50 text-orange-800 dark:text-orange-200 px-3 py-1 rounded-full text-sm">UGC话题</span>
-                        </div>
+                        
+                        <ul class="space-y-3">
+                            <li class="flex items-center">
+                                <i class="fas fa-tshirt text-pink-500 mr-2"></i>
+                                <span>定制周边</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-handshake text-blue-500 mr-2"></i>
+                                <span>联合活动</span>
+                            </li>
+                        </ul>
                     </div>
                     
                     <div class="card bg-white dark:bg-gray-800 p-6">
-                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
-                            <i class="fas fa-shopping-cart text-orange-500 mr-2"></i>
-                            4.商业化尝试
+                        <h3 class="text-xl font-semibold mb-4 flex items-center">
+                            <i class="fas fa-id-card text-green-500 mr-2"></i>
+                            案例展示
                         </h3>
-                        <div class="flex flex-wrap gap-3">
-                            <span class="bg-orange-100 dark:bg-orange-900/50 text-orange-800 dark:text-orange-200 px-3 py-1 rounded-full text-sm">定制周边</span>
-                            <span class="bg-orange-100 dark:bg-orange-900/50 text-orange-800 dark:text-orange-200 px-3 py-1 rounded-full text-sm">联合活动</span>
+                        
+                        <p class="font-medium mb-2">名字：8bit</p>
+                        <p class="mb-3">设计展示：</p>
+                        
+                        <div class="grid grid-cols-2 gap-3 mb-4">
+                            <div class="image-container">
+                                <img src="https://cdn.jsdelivr.net/gh/Glimmer2077/photo@main/ChatGPT%20Image%202025%E5%B9%B44%E6%9C%889%E6%97%A5%2015_06_10.png" alt="8bit设计1" class="rounded">
+                            </div>
+                            <div class="image-container">
+                                <img src="https://cdn.jsdelivr.net/gh/Glimmer2077/photo@main/ChatGPT%20Image%202025%E5%B9%B44%E6%9C%889%E6%97%A5%2015_03_41.png
+                                " alt="8bit设计2" class="rounded">
+                            </div>
                         </div>
                     </div>
-                </div>
-            </section>
-            
-            <!-- 第5部分 -->
-            <section id="part5" class="mb-16 fade-in">
-                <div class="flex items-center mb-6">
-                    <i class="fas fa-flag-checkered text-3xl text-red-600 dark:text-red-400 mr-3"></i>
-                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white section-title">第5部分：最终目标</h2>
                 </div>
                 
                 <div class="card bg-white dark:bg-gray-800 p-6">
-                    <p class="text-gray-700 dark:text-gray-300 mb-6">IP将不再是品牌的传播工具，而是一个能自驱成长的"虚拟IP合伙人"：</p>
+                    <h3 class="text-xl font-semibold mb-4 flex items-center">
+                        <i class="fas fa-robot text-blue-500 mr-2"></i>
+                        AI生成内容展示
+                    </h3>
                     
-                    <div class="grid md:grid-cols-3 gap-6">
-                        <div class="bg-red-50 dark:bg-red-900/30 p-4 rounded-lg">
-                            <div class="flex items-center mb-3">
-                                <i class="fas fa-film text-red-500 mr-2"></i>
-                                <h4 class="font-semibold text-gray-800 dark:text-white">在内容上</h4>
-                            </div>
-                            <p class="text-gray-700 dark:text-gray-300">成为游戏圈文化的共鸣符号</p>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                        <div class="image-container">
+                            <img src="https://cdn.jsdelivr.net/gh/Glimmer2077/photo@main/ChatGPT%20Image%202025%E5%B9%B44%E6%9C%8810%E6%97%A5%2010_42_20.png" alt="AI生成内容1" class="rounded">
                         </div>
-                        
-                        <div class="bg-red-50 dark:bg-red-900/30 p-4 rounded-lg">
-                            <div class="flex items-center mb-3">
-                                <i class="fas fa-users text-red-500 mr-2"></i>
-                                <h4 class="font-semibold text-gray-800 dark:text-white">在社交上</h4>
-                            </div>
-                            <p class="text-gray-700 dark:text-gray-300">成为玩家关系的情绪纽带</p>
+                        <div class="image-container">
+                            <img src="https://cdn.jsdelivr.net/gh/Glimmer2077/photo@main/ChatGPT%20Image%202025%E5%B9%B44%E6%9C%8810%E6%97%A5%2015_05_18.png" alt="AI生成内容2" class="rounded">
                         </div>
-                        
-                        <div class="bg-red-50 dark:bg-red-900/30 p-4 rounded-lg">
-                            <div class="flex items-center mb-3">
-                                <i class="fas fa-store text-red-500 mr-2"></i>
-                                <h4 class="font-semibold text-gray-800 dark:text-white">在商业上</h4>
-                            </div>
-                            <p class="text-gray-700 dark:text-gray-300">成为带动手柄、周边、联名破圈的爆点资产</p>
+                        <div class="image-container">
+                            <img src="https://cdn.jsdelivr.net/gh/Glimmer2077/photo@main/ChatGPT%20Image%202025%E5%B9%B44%E6%9C%889%E6%97%A5%2015_09_53.png" alt="AI生成内容3" class="rounded">
+                        </div>
+                        <div class="image-container">
+                            <img src="https://cdn.jsdelivr.net/gh/Glimmer2077/photo@main/ChatGPT%20Image%202025%E5%B9%B44%E6%9C%889%E6%97%A5%2017_21_09.png" alt="AI生成内容5" class="rounded">
+                        </div>
+                        <div class="image-container">
+                            <img src="https://cdn.jsdelivr.net/gh/Glimmer2077/photo@main/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250410143256.png" alt="AI生成内容6" class="rounded">
                         </div>
                     </div>
                 </div>
             </section>
             
-            <!-- 作者信息 -->
-            <section class="mb-8 fade-in">
-                <div class="border-t border-gray-200 dark:border-gray-700 pt-8">
-                    <div class="flex flex-col md:flex-row justify-between items-center">
-                        <div class="flex items-center mb-4 md:mb-0">
-                            <i class="fas fa-user-circle text-3xl text-gray-600 dark:text-gray-400 mr-3"></i>
-                            <div>
-                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white">作者信息</h3>
-                                <p class="text-gray-600 dark:text-gray-400">袁帅</p>
+            <!-- 第5部分：最终目标 -->
+            <section id="part5" class="mb-16 fade-in">
+                <div class="flex items-center mb-6">
+                    <i class="fas fa-flag-checkered text-3xl text-red-500 mr-3"></i>
+                    <h2 class="text-2xl md:text-3xl font-bold section-title">第5部分：最终目标</h2>
+                </div>
+                
+                <div class="card bg-white dark:bg-gray-800 p-6">
+                    <p class="text-lg mb-4">IP将不再是品牌的传播工具，而是一个能自驱成长的"虚拟IP合伙人"：</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="p-5 bg-gradient-to-br from-blue-500 to-blue-700 text-white rounded-lg">
+                            <div class="flex items-center mb-3">
+                                <i class="fas fa-film text-3xl mr-3"></i>
+                                <h3 class="text-xl font-semibold">在内容上</h3>
                             </div>
+                            <p>成为游戏圈文化的共鸣符号</p>
                         </div>
-                        <div class="flex items-center">
-                            <p class="text-gray-600 dark:text-gray-400 text-sm">© 2023 八位堂IP战略规划</p>
+                        
+                        <div class="p-5 bg-gradient-to-br from-purple-500 to-purple-700 text-white rounded-lg">
+                            <div class="flex items-center mb-3">
+                                <i class="fas fa-users text-3xl mr-3"></i>
+                                <h3 class="text-xl font-semibold">在社交上</h3>
+                            </div>
+                            <p>成为玩家关系的情绪纽带</p>
+                        </div>
+                        
+                        <div class="p-5 bg-gradient-to-br from-green-500 to-green-700 text-white rounded-lg">
+                            <div class="flex items-center mb-3">
+                                <i class="fas fa-shopping-cart text-3xl mr-3"></i>
+                                <h3 class="text-xl font-semibold">在商业上</h3>
+                            </div>
+                            <p>成为带动手柄、周边、联名破圈的爆点资产</p>
                         </div>
                     </div>
                 </div>
             </section>
         </main>
+        
+        <footer class="bg-gray-100 dark:bg-gray-800 py-8">
+            <div class="container mx-auto px-4">
+                <div class="border-t border-gray-300 dark:border-gray-700 pt-6">
+                    <div class="flex flex-col md:flex-row justify-between items-center">
+                        <div class="mb-4 md:mb-0">
+                            <h3 class="text-lg font-semibold mb-2">作者信息</h3>
+                            <p>作者姓名: 袁帅</p>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <a href="#part1" class="text-blue-600 dark:text-blue-400 hover:underline">回到顶部</a>
+                            <button id="themeToggleFooter" class="p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                                <i class="fas fa-moon dark:text-white"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
     </div>
 
-    <!-- JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/preline@1.9.0/dist/preline.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/preline@1.9.0/dist/preline.js"></script>
     <script>
         // 密码验证
-        document.addEventListener('DOMContentLoaded', function() {
-            const passwordModal = document.getElementById('passwordModal');
-            const passwordInput = document.getElementById('passwordInput');
-            const submitPassword = document.getElementById('submitPassword');
-            const passwordError = document.getElementById('passwordError');
-            const mainContent = document.getElementById('mainContent');
-            const correctPassword = '8bitdo2013';
-            
-            // 检查本地存储中是否已验证
-            const isAuthenticated = localStorage.getItem('8bitdo_authenticated');
-            if (isAuthenticated === 'true') {
-                passwordModal.style.display = 'none';
-                mainContent.classList.remove('content-hidden');
+        const passwordModal = document.getElementById('passwordModal');
+        const mainContent = document.getElementById('mainContent');
+        const passwordInput = document.getElementById('passwordInput');
+        const submitPassword = document.getElementById('submitPassword');
+        const passwordError = document.getElementById('passwordError');
+        
+        const correctPassword = '8bitdo2013';
+        
+        // 检查本地存储是否已验证
+        if (localStorage.getItem('passwordVerified') === 'true') {
+            passwordModal.classList.add('hidden');
+            mainContent.classList.remove('hidden');
+        }
+        
+        submitPassword.addEventListener('click', checkPassword);
+        passwordInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
             }
-            
-            submitPassword.addEventListener('click', function() {
-                if (passwordInput.value === correctPassword) {
-                    passwordModal.style.display = 'none';
-                    mainContent.classList.remove('content-hidden');
-                    localStorage.setItem('8bitdo_authenticated', 'true');
-                } else {
-                    passwordError.classList.remove('hidden');
-                    passwordInput.value = '';
+        });
+        
+        function checkPassword() {
+            if (passwordInput.value === correctPassword) {
+                passwordModal.classList.add('hidden');
+                mainContent.classList.remove('hidden');
+                localStorage.setItem('passwordVerified', 'true');
+                
+                // 添加淡入动画
+                const sections = document.querySelectorAll('section');
+                sections.forEach((section, index) => {
                     setTimeout(() => {
-                        passwordError.classList.add('hidden');
-                    }, 3000);
-                }
-            });
-            
-            // 按Enter键提交
-            passwordInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    submitPassword.click();
-                }
-            });
-            
-            // 主题切换
-            const themeToggle = document.getElementById('themeToggle');
-            const htmlElement = document.documentElement;
-            const body = document.body;
-            
-            // 检查用户偏好
-            const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const savedTheme = localStorage.getItem('theme');
-            
-            if (savedTheme === 'dark' || (!savedTheme && prefersDarkMode)) {
+                        section.classList.add('fade-in');
+                    }, index * 200);
+                });
+            } else {
+                passwordError.classList.remove('hidden');
+                passwordInput.value = '';
+                passwordInput.focus();
+                
+                // 震动效果
+                passwordInput.classList.add('animate-shake');
+                setTimeout(() => {
+                    passwordInput.classList.remove('animate-shake');
+                }, 500);
+            }
+        }
+        
+        // 深色/浅色模式切换
+        const themeToggle = document.getElementById('themeToggle');
+        const themeToggleFooter = document.getElementById('themeToggleFooter');
+        const body = document.body;
+        
+        // 检查系统偏好
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            body.classList.remove('light');
+            body.classList.add('dark');
+            updateThemeIcons(true);
+        }
+        
+        // 检查本地存储的主题设置
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            if (savedTheme === 'dark') {
                 body.classList.remove('light');
                 body.classList.add('dark');
+                updateThemeIcons(true);
+            } else {
+                body.classList.remove('dark');
+                body.classList.add('light');
+                updateThemeIcons(false);
             }
+        }
+        
+        function toggleTheme() {
+            if (body.classList.contains('dark')) {
+                body.classList.remove('dark');
+                body.classList.add('light');
+                localStorage.setItem('theme', 'light');
+                updateThemeIcons(false);
+            } else {
+                body.classList.remove('light');
+                body.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                updateThemeIcons(true);
+            }
+        }
+        
+        function updateThemeIcons(isDark) {
+            const moonIcon = '<i class="fas fa-moon"></i>';
+            const sunIcon = '<i class="fas fa-sun"></i>';
             
-            themeToggle.addEventListener('click', function() {
-                if (body.classList.contains('light')) {
-                    body.classList.remove('light');
-                    body.classList.add('dark');
-                    localStorage.setItem('theme', 'dark');
-                } else {
-                    body.classList.remove('dark');
-                    body.classList.add('light');
-                    localStorage.setItem('theme', 'light');
-                }
-            });
-            
-            // 添加滚动动画
-            const sections = document.querySelectorAll('section');
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('fade-in');
-                    }
+            themeToggle.innerHTML = isDark ? sunIcon : moonIcon;
+            themeToggleFooter.innerHTML = isDark ? sunIcon : moonIcon;
+        }
+        
+        themeToggle.addEventListener('click', toggleTheme);
+        themeToggleFooter.addEventListener('click', toggleTheme);
+        
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
                 });
-            }, { threshold: 0.1 });
-            
-            sections.forEach(section => {
-                observer.observe(section);
             });
+        });
+        
+        // 图片加载错误处理
+        document.querySelectorAll('img').forEach(img => {
+            img.onerror = function() {
+                this.src = 'https://via.placeholder.com/300x200?text=图片加载失败';
+            };
         });
     </script>
 </body>

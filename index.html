@@ -427,7 +427,7 @@
 
         const btn = document.getElementById('btn-checkin');
         if(isDone) { btn.classList.add('checked'); btn.innerHTML='<span>✓</span> 今日已完成'; }
-        else { btn.classList.remove('checked'); btn.innerHTML='<span>⚪</span> 长按打卡'; }
+        else { btn.classList.remove('checked'); btn.innerHTML='<span>⚪</span> 还不赶紧打卡'; }
         if(document.getElementById('view-year-container').style.display==='block') { renderYearView(); }
     }
 
@@ -660,3 +660,4 @@
 </script>
 </body>
 </html>
+

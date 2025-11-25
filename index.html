@@ -1,876 +1,662 @@
 <!DOCTYPE html>
-<html lang="zh-CN" class="scroll-smooth">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>八位堂 IP 策略</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/preline@1.9.0/dist/preline.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Habit Tracker V6.1</title>
     <style>
         :root {
-            --primary-color: #FF6B6B;
-            --secondary-color: #4ECDC4;
-            --accent-color: #FFE66D;
-            --dark-bg: #2A363B;
-            --light-bg: #F7F9FC;
-            --text-dark: #333333;
-            --text-light: #F7F9FC;
+            --bg-color: #F2F2F7;
+            --card-bg: #FFFFFF;
+            --text-main: #000000;
+            --text-sub: #8E8E93;
+            /* 配色 */
+            --c-lemon: #EBFF00;
+            --c-taro: #C8B6FF;
+            --c-blue: #4A90E2;
+            --c-green: #34C759;
+            --c-pink: #FF2D55;
+            --c-orange: #FF9500;
+            --radius-box: 24px;
+            --radius-s: 12px;
+            --nav-height: 80px;
+            --safe-area-top: env(safe-area-inset-top);
+            --safe-area-bottom: env(safe-area-inset-bottom);
         }
-        
-        .dark {
-            --bg-primary: var(--dark-bg);
-            --text-primary: var(--text-light);
-        }
-        
-        .light {
-            --bg-primary: var(--light-bg);
-            --text-primary: var(--text-dark);
-        }
-        
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+        input, textarea { user-select: auto !important; }
+
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-            transition: background-color 0.3s ease, color 0.3s ease;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+            background-color: var(--bg-color); color: var(--text-main);
+            margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden;
         }
-        
+
+        .app-container { flex: 1; position: relative; overflow: hidden; max-width: 450px; margin: 0 auto; width: 100%; background: var(--bg-color); }
+        .page {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            overflow-y: auto; padding: calc(var(--safe-area-top) + 20px) 20px calc(var(--nav-height) + 40px) 20px;
+            display: none; scrollbar-width: none;
+        }
+        .page.active { display: block; animation: fadeIn 0.3s ease; }
+        .page::-webkit-scrollbar { display: none; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        h1 { font-size: 3rem; font-weight: 900; margin: 10px 0 30px 0; line-height: 1; letter-spacing: -0.03em; }
+        h2 { font-size: 1.5rem; font-weight: 800; margin: 30px 0 15px 0; }
+        h3 { font-size: 1.1rem; font-weight: 800; margin: 0; }
+
+        .card-list { display: flex; flex-direction: column; gap: 20px; }
         .card {
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
+            background: var(--card-bg); border-radius: var(--radius-box); padding: 25px;
+            position: relative; display: flex; flex-direction: column; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03); transition: transform 0.1s;
         }
+        .card.full { width: 100%; }
         
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        .bg-lemon { background-color: var(--c-lemon); }
+        .bg-taro { background-color: var(--c-taro); }
+        .bg-blue { background-color: var(--c-blue); color: white; }
+        .bg-green { background-color: var(--c-green); color: white; }
+        .bg-pink { background-color: var(--c-pink); color: white; }
+        .bg-orange { background-color: var(--c-orange); }
+
+        .big-num { font-size: 3.5rem; font-weight: 900; line-height: 1; letter-spacing: -0.05em; }
+        .label { font-size: 0.8rem; font-weight: 700; opacity: 0.7; text-transform: uppercase; margin-top: auto; }
+
+        .list-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+        .habit-name { font-size: 1.8rem; font-weight: 800; line-height: 1.1; }
+        .mini-stats { display: flex; gap: 20px; }
+        .mini-stat-item { display: flex; flex-direction: column; }
+        .mini-stat-val { font-size: 1.5rem; font-weight: 900; }
+        .mini-stat-lbl { font-size: 0.7rem; font-weight: 600; opacity: 0.6; }
+
+        /* 底部详情弹窗 */
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); z-index: 1000;
+            display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            padding: calc(var(--safe-area-top) + 20px) 20px 40px 20px;
         }
+        .modal.open { transform: translateY(0); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .close-btn { width: 40px; height: 40px; background: rgba(0,0,0,0.1); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; cursor: pointer; }
+        .modal-content { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; scrollbar-width: none; padding-bottom: 40px; }
         
-        .btn {
-            transition: all 0.3s ease;
+        .view-toggle { display: flex; background: rgba(0,0,0,0.05); padding: 4px; border-radius: 12px; margin-bottom: 10px; flex-shrink: 0; }
+        .view-btn { flex: 1; padding: 8px; text-align: center; border-radius: 8px; font-weight: 700; font-size: 0.8rem; color: #999; }
+        .view-btn.active { background: white; color: black; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+
+        /* 近期视图 */
+        .recent-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; width: 100%; }
+        .recent-block { 
+            width: 100%; aspect-ratio: 1; border-radius: 8px; background: rgba(0,0,0,0.05); 
+            display: flex; justify-content: center; align-items: center; font-size: 0.7rem; font-weight: 700; color: rgba(0,0,0,0.3);
+            transition: all 0.2s;
         }
+        .recent-block.active { box-shadow: 0 2px 8px rgba(0,0,0,0.1); color: rgba(0,0,0,0.5); }
+        .recent-block.today { border: 2px solid rgba(0,0,0,0.1); }
+
+        /* 年度视图 */
+        .year-tabs-container { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; margin-bottom: 10px; scrollbar-width: none; }
+        .year-tab { padding: 6px 16px; background: #eee; border-radius: 20px; font-size: 0.8rem; font-weight: 700; color: #999; flex-shrink: 0; transition: all 0.2s; }
+        .year-tab.active { background: black; color: white; }
+        .year-grid-container { overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 10px; }
+        .year-grid { display: grid; grid-template-rows: repeat(7, 10px); grid-auto-flow: column; gap: 3px; width: max-content; }
+        .year-dot { width: 10px; height: 10px; background: #eee; border-radius: 2px; }
+        .month-separator { width: 1px; height: 100%; background: rgba(0,0,0,0.1); margin: 0 2px; grid-row: 1 / -1; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .stat-card { background: #fff; border-radius: var(--radius-s); padding: 15px; display: flex; flex-direction: column; justify-content: space-between; min-height: 100px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .stat-val { font-size: 1.8rem; font-weight: 900; line-height: 1; }
+        .stat-lbl { font-size: 0.7rem; font-weight: 700; color: #999; margin-top: 5px; }
+
+        .check-btn-container { margin-top: auto; padding-top: 20px; flex-shrink: 0; }
+        .big-check-btn {
+            width: 100%; height: 80px; border-radius: 40px; border: none; background: #000; color: #fff; 
+            font-size: 1.5rem; font-weight: 800; display: flex; justify-content: center; align-items: center; gap: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: transform 0.1s;
+        }
+        .big-check-btn:active { transform: scale(0.95); }
+        .big-check-btn.checked { background: var(--c-green); color: white; }
+
+        /* 徽章墙 */
+        .badge-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .badge-toggle-btn { font-size: 0.8rem; font-weight: 700; color: var(--c-blue); cursor: pointer; }
+        .badge-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; height: auto; overflow: hidden; }
+        .badge-grid.collapsed { height: 90px; }
+        .badge { aspect-ratio: 1; background: #eee; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0.3; filter: grayscale(1); transition: all 0.5s; }
+        .badge.unlocked { opacity: 1; filter: grayscale(0); background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .badge-icon { font-size: 1.5rem; margin-bottom: 2px; }
+        .badge-text { font-size: 0.6rem; font-weight: 700; color: #666; text-align: center; line-height: 1; }
+        .badge.gold { background: linear-gradient(135deg, #FFF 0%, #FFD700 100%); color: #8B4500; }
         
-        .btn:hover {
-            transform: scale(1.05);
+        /* 归档 & 导航 */
+        details summary { list-style: none; padding: 20px; background: #E5E5EA; border-radius: var(--radius-box); font-weight: 700; color: #666; display: flex; justify-content: space-between; align-items: center; }
+        details summary::-webkit-details-marker { display: none; }
+        details[open] summary { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+        .archived-list { background: #E5E5EA; border-bottom-left-radius: var(--radius-box); border-bottom-right-radius: var(--radius-box); padding: 0 20px 20px 20px; }
+        .tab-bar {
+            position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 450px;
+            height: calc(var(--nav-height) + var(--safe-area-bottom)); background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid rgba(0,0,0,0.05);
+            display: flex; justify-content: space-around; padding-bottom: var(--safe-area-bottom); z-index: 100;
         }
+        .tab-item { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #999; font-size: 0.7rem; font-weight: 600; }
+        .tab-item.active { color: black; }
+        .tab-icon { width: 24px; height: 24px; background: currentColor; margin-bottom: 4px; border-radius: 6px; transition: transform 0.2s; }
+        .tab-item.active .tab-icon { transform: scale(1.1); }
+
+        /* 自定义通用弹窗 */
+        .dialog-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4); backdrop-filter: blur(5px);
+            z-index: 2000; display: none; justify-content: center; align-items: center;
+        }
+        .dialog-card {
+            background: white; width: 85%; max-width: 320px; border-radius: 24px; padding: 30px 20px;
+            text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; flex-direction: column; align-items: center;
+        }
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .dialog-icon { font-size: 4rem; margin-bottom: 10px; }
+        .dialog-title { font-size: 1.5rem; font-weight: 900; margin-bottom: 10px; }
+        .dialog-desc { font-size: 0.9rem; color: #666; line-height: 1.5; margin-bottom: 20px; }
+        .dialog-status-tag { padding: 4px 12px; border-radius: 100px; font-size: 0.8rem; font-weight: 700; margin-bottom: 15px; }
+        .dialog-input { width: 100%; padding: 15px; background: #F2F2F7; border: none; border-radius: 12px; font-size: 1rem; margin-bottom: 20px; outline: none; }
+        .dialog-textarea { width: 100%; height: 80px; padding: 10px; background: #F2F2F7; border: none; border-radius: 12px; font-size: 0.8rem; margin-bottom: 20px; resize: none; outline: none; font-family: monospace; }
         
-        .section-title {
-            position: relative;
-            padding-bottom: 10px;
-        }
+        .dialog-btn-group { display: flex; gap: 10px; width: 100%; }
+        .dialog-btn-vertical { display: flex; flex-direction: column; gap: 10px; width: 100%; }
         
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 60px;
-            height: 4px;
-            background: var(--primary-color);
-            border-radius: 2px;
+        .dialog-btn { flex: 1; padding: 12px; border-radius: 12px; font-weight: 700; border: none; font-size: 1rem; cursor: pointer; display:flex; justify-content: center; align-items: center; gap: 8px;}
+        .btn-cancel { background: #F2F2F7; color: black; }
+        .btn-confirm { background: var(--c-blue); color: white; }
+        .btn-danger { background: #FF3B30; color: white; }
+        .btn-action { background: black; color: white; width: 100%; }
+        .btn-action-outline { background: white; color: black; border: 2px solid #eee; width: 100%; }
+
+        .small-tip { font-size: 0.7rem; color: #999; margin-top: 10px; }
+        .dialog-divider { width: 100%; text-align: center; border-bottom: 1px solid #eee; line-height: 0.1em; margin: 20px 0; color: #999; font-size: 0.8rem; }
+        .dialog-divider span { background: #fff; padding: 0 10px; }
+
+        /* Toast */
+        .toast {
+            position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.8); color: white; padding: 12px 24px; border-radius: 50px;
+            font-size: 0.9rem; font-weight: 600; pointer-events: none; opacity: 0; transition: opacity 0.3s; z-index: 3000;
         }
-        
-        .fade-in {
-            animation: fadeIn 0.8s ease-in-out;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .image-container {
-            overflow: hidden;
-            border-radius: 8px;
-        }
-        
-        .image-container img {
-            transition: transform 0.5s ease;
-            width: 100%;
-            height: auto;
-        }
-        
-        .image-container:hover img {
-            transform: scale(1.05);
-        }
-        
-        /* 密码弹窗样式 */
-        .password-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        
-        .password-container {
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 400px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        }
-        
-        .hidden {
-            display: none;
-        }
-        
-        /* 修复图片防盗链问题 */
-        img {
-            object-fit: cover;
-        }
+        .toast.show { opacity: 1; }
     </style>
 </head>
-<body class="light">
-    <!-- 密码弹窗 -->
-    <div id="passwordModal" class="password-modal">
-        <div class="password-container">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">请输入访问密码</h2>
-            <p class="text-gray-600 mb-4">此内容受密码保护，请输入正确的密码继续访问。</p>
-            <input type="password" id="passwordInput" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4" placeholder="请输入密码">
-            <button id="submitPassword" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-300">确认</button>
-            <p id="passwordError" class="text-red-500 mt-2 hidden">密码错误，请重试</p>
+<body>
+
+<input type="file" id="import-file" accept=".txt,.json" style="display:none" onchange="handleFileSelect(this)">
+
+<div class="app-container">
+    
+    <div id="page-tracker" class="page active">
+        <h1>习惯列表</h1>
+        <div id="habit-list" class="card-list"></div>
+        <div id="empty-state" style="display:none; text-align:center; padding:40px; color:#999;">
+            还没有习惯，去"管理"页面添加一个吧！
         </div>
     </div>
 
-    <!-- 主内容区域 -->
-    <div id="mainContent" class="hidden">
-        <header class="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-12">
-            <div class="container mx-auto px-4">
-                <div class="flex justify-between items-center">
-                    <h1 class="text-3xl md:text-4xl font-bold">八位堂 IP 策略</h1>
-                    <button id="themeToggle" class="p-2 rounded-full bg-white/20 hover:bg-white/30 transition">
-                        <i class="fas fa-moon text-white"></i>
-                    </button>
-                </div>
-                <p class="mt-4 text-xl opacity-90">打造有情感连接的游戏外设品牌 IP</p>
-            </div>
-        </header>
-
-        <nav class="sticky top-0 bg-white dark:bg-gray-800 shadow-md z-50">
-            <div class="container mx-auto px-4">
-                <div class="flex justify-between items-center py-4">
-                    <div class="text-lg font-semibold text-gray-800 dark:text-white">八位堂 IP</div>
-                    <div class="flex space-x-6">
-                        <a href="#part1" class="text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition">品牌审视</a>
-                        <a href="#part2" class="text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition">IP战略</a>
-                        <a href="#part3" class="text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition">品牌与IP分离</a>
-                        <a href="#part4" class="text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition">运营规划</a>
-                        <a href="#part5" class="text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition">最终目标</a>
-                    </div>
-                </div>
-            </div>
-        </nav>
-
-        <main class="container mx-auto px-4 py-8">
-            <!-- 第1部分：品牌审视与现状诊断 -->
-            <section id="part1" class="mb-16 fade-in">
-                <div class="flex items-center mb-6">
-                    <i class="fas fa-compass text-3xl text-blue-600 mr-3"></i>
-                    <h2 class="text-2xl md:text-3xl font-bold section-title">第1部分：品牌审视与现状诊断</h2>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
-                    <div class="card bg-white dark:bg-gray-800 p-6">
-                        <h3 class="text-xl font-semibold mb-4 flex items-center">
-                            <i class="fas fa-bullseye text-blue-500 mr-2"></i>
-                            八位堂品牌核心价值
-                        </h3>
-                        <ul class="space-y-3">
-                            <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
-                                <span>设计感强（有美学标准，偏极简或复古潮流）</span>
-                            </li>
-                            <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
-                                <span>品控严谨，属于高质量硬件玩家</span>
-                            </li>
-                        </ul>
-                    </div>
-                    
-                    <div class="card bg-white dark:bg-gray-800 p-6">
-                        <h3 class="text-xl font-semibold mb-4 flex items-center">
-                            <i class="fas fa-users text-blue-500 mr-2"></i>
-                            当前用户画像
-                        </h3>
-                        <p class="mb-3">PC和主机玩游戏的Z世代年轻人，属于"硬核+有审美"的游戏人群</p>
-                        <p class="font-medium">他们更看重八位堂的哪一点：</p>
-                        <div class="flex flex-wrap gap-2 mt-2">
-                            <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full">设计感</span>
-                            <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full">手感</span>
-                            <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full">品牌调性</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
-                    <div class="card bg-white dark:bg-gray-800 p-6">
-                        <h3 class="text-xl font-semibold mb-4 flex items-center">
-                            <i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>
-                            品牌最大的问题/挑战
-                        </h3>
-                        <ul class="space-y-3">
-                            <li class="flex items-start">
-                                <i class="fas fa-circle text-red-500 text-xs mt-1.5 mr-2"></i>
-                                <span>八位堂知名度不错，但缺乏"情感连接点"</span>
-                            </li>
-                            <li class="flex items-start">
-                                <i class="fas fa-circle text-red-500 text-xs mt-1.5 mr-2"></i>
-                                <span>市面上越来越多"手柄美学"新品牌，开始抢话语权</span>
-                            </li>
-                            <li class="flex items-start">
-                                <i class="fas fa-circle text-red-500 text-xs mt-1.5 mr-2"></i>
-                                <span>硬件做得漂亮，但和用户之间缺少"陪伴感"、"认同感"、"个性表达"的情绪接口</span>
-                            </li>
-                        </ul>
-                    </div>
-                    
-                    <div class="card bg-white dark:bg-gray-800 p-6">
-                        <h3 class="text-xl font-semibold mb-4 flex items-center">
-                            <i class="fas fa-chart-line text-purple-500 mr-2"></i>
-                            市场位置 & 竞争品牌
-                        </h3>
-                        <div class="grid grid-cols-3 gap-4 mb-4">
-                            <div class="image-container">
-                                <img src="images/ip/feizhi.jpg" alt="飞智" class="rounded">
-                                <p class="text-center mt-2 font-medium">飞智</p>
-                            </div>
-                            <div class="image-container">
-                                <img src="images/ip/xiaoji.jpg" alt="小鸡" class="rounded">
-                                <p class="text-center mt-2 font-medium">小鸡</p>
-                            </div>
-                            <div class="image-container">
-                                <img src="images/ip/beitong.jpg" alt="北通" class="rounded">
-                                <p class="text-center mt-2 font-medium">北通</p>
-                            </div>
-                        </div>
-                        <p class="text-sm">飞智 / 小鸡 / 北通 ——这些品牌在手感、功能战上竞争激烈，但在IP形象与用户连接上仍属空白，是我们可抢占的突破口</p>
-                        
-                        <div class="mt-4 space-y-3">
-                            <div>
-                                <span class="font-medium">IP形象：</span>
-                                <span>他们虽有IP，但不是一个有情绪、有梗、能说话的游戏外设角色IP</span>
-                            </div>
-                            <div>
-                                <span class="font-medium">用户互动：</span>
-                                <span>飞智偏技术，小鸡偏潮玩，北通偏功能性；八位堂可以强调"陪伴+表达+美学"，打造与玩家情绪共振的玩伴型IP</span>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/30 rounded-lg">
-                            <p>目前的游戏外设市场中，真正有人格表达的品牌角色几乎是空白区。</p>
-                            <p class="mt-2">如果八位堂通过打造一个"懂玩家、会吐槽、有文化属性"的角色，不仅可以弥补品牌和用户之间的情感连接，还能打穿内容营销与社交传播双通路。</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- 第2部分：IP战略锚点 -->
-            <section id="part2" class="mb-16 fade-in">
-                <div class="flex items-center mb-6">
-                    <i class="fas fa-lightbulb text-3xl text-yellow-500 mr-3"></i>
-                    <h2 class="text-2xl md:text-3xl font-bold section-title">第2部分：IP战略锚点</h2>
-                </div>
-                
-                <div class="card bg-white dark:bg-gray-800 p-6 mb-8">
-                    <p class="text-lg">一个替八位堂发声、吐槽、耍帅、陪打游戏的拟人化IP形象，陪着用户"一起玩"、"一起疯"。</p>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                        <div class="flex items-start">
-                            <i class="fas fa-mobile-alt text-blue-500 text-2xl mt-1 mr-3"></i>
-                            <div>
-                                <h4 class="font-semibold text-lg">内容载体</h4>
-                                <p>表情包、短视频出镜、语录、虚拟形象做表态</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start">
-                            <i class="fas fa-shopping-bag text-pink-500 text-2xl mt-1 mr-3"></i>
-                            <div>
-                                <h4 class="font-semibold text-lg">商业化载体</h4>
-                                <p>做联名手柄、贴纸、键帽、服饰，甚至出"周边包"都行</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
-                        <h4 class="font-semibold text-lg mb-2">举例：Bit酱</h4>
-                        <div class="flex flex-wrap gap-3">
-                            <div class="flex items-center">
-                                <span class="font-medium mr-2">性格：</span>
-                                <span class="px-3 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded-full">酷帅+毒舌</span>
-                                <span class="px-3 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-full ml-2">沙雕+聪明</span>
-                                <span class="px-3 py-1 bg-pink-100 dark:bg-pink-900 text-pink-800 dark:text-pink-200 rounded-full ml-2">治愈+中性萌</span>
-                            </div>
-                        </div>
-                        <div class="mt-3">
-                            <span class="font-medium">参考：</span>
-                            <span>LINE FRIENDS、Loopy、Jellycat、薯队长</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <!-- 动物拟人 -->
-                    <div class="card bg-white dark:bg-gray-800 p-6">
-                        <div class="flex items-center mb-4">
-                            <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center mr-3">
-                                <i class="fas fa-paw text-blue-600 dark:text-blue-400"></i>
-                            </div>
-                            <h3 class="text-xl font-semibold">1. 动物拟人</h3>
-                        </div>
-                        <p class="text-blue-600 dark:text-blue-400 font-medium">最低传播门槛 + 最高亲和度</p>
-                        <p class="mt-3">可爱动物形象是跨年龄、跨圈层的通用型符号，无需过度解释即可引发好感。</p>
-                        
-                        <h4 class="font-medium mt-4 mb-2">案例支撑：</h4>
-                        <div class="space-y-4">
-                            <div>
-                                <div class="image-container mb-2">
-                                    <img src="images/ip/loopy.jpg" alt="Loopy" class="rounded">
-                                </div>
-                                <p><span class="font-medium">Loopy：</span>粉色河狸，成功融入"阴阳怪气+撒娇式发疯"的表达情绪主阵地，成功出圈</p>
-                            </div>
-                            <div>
-                                <div class="image-container mb-2">
-                                    <img src="images/ip/line.jpg" alt="LINE FRIENDS" class="rounded">
-                                </div>
-                                <p><span class="font-medium">LINE FRIENDS中的莎莉、可妮兔：</span>情绪表达直接、动作大、具备极强可模仿性</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- 表情丰富 -->
-                    <div class="card bg-white dark:bg-gray-800 p-6">
-                        <div class="flex items-center mb-4">
-                            <div class="w-10 h-10 rounded-full bg-yellow-100 dark:bg-yellow-900 flex items-center justify-center mr-3">
-                                <i class="fas fa-laugh-beam text-yellow-600 dark:text-yellow-400"></i>
-                            </div>
-                            <h3 class="text-xl font-semibold">2. 表情丰富</h3>
-                        </div>
-                        <p class="text-yellow-600 dark:text-yellow-400 font-medium">社交表情包 & 贴纸应用力超强</p>
-                        <p class="mt-3">能让用户"表情化地使用角色"是IP成功的第一步，尤其在微信、小红书、抖音的内容表达中。</p>
-                        
-                        <h4 class="font-medium mt-4 mb-2">案例支撑：</h4>
-                        <div class="space-y-4">
-                            <div>
-                                <div class="image-container mb-2">
-                                    <img src="images/ip/wa.jpg" alt="悲伤蛙 × 探鱼" class="rounded">
-                                </div>
-                                <p><span class="font-medium">悲伤蛙 × 探鱼：</span>表情包+炸裂话语体系结合，形成爆款"饭搭子"人格IP，助力品牌事件出圈</p>
-                            </div>
-                            <div>
-                                <div class="image-container mb-2">
-                                    <img src="images/ip/qie.jpg" alt="Jellycat玩偶" class="rounded">
-                                </div>
-                                <p><span class="font-medium">Jellycat玩偶：</span>通过"不稳定精神状态"拟人表达，引发"共疯型情绪共鸣"</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- 语言多变 -->
-                    <div class="card bg-white dark:bg-gray-800 p-6">
-                        <div class="flex items-center mb-4">
-                            <div class="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center mr-3">
-                                <i class="fas fa-comments text-green-600 dark:text-green-400"></i>
-                            </div>
-                            <h3 class="text-xl font-semibold">3. 语言多变</h3>
-                        </div>
-                        <p class="text-green-600 dark:text-green-400 font-medium">高黏性人格IP的灵魂内核</p>
-                        <p class="mt-3">可以切换情绪表达（撒娇/毒舌/暴躁/佛系），让用户代入时产生"她说出了我没说出来的话"的共鸣。</p>
-                        
-                        <h4 class="font-medium mt-4 mb-2">案例支撑：</h4>
-                        <div class="space-y-4">
-                            <div>
-                                <div class="image-container mb-2">
-                                    <img src="images/ip/shu.jpg" alt="薯队长" class="rounded">
-                                </div>
-                                <p><span class="font-medium">薯队长（小红书）：</span>切换俏皮、疯言疯语、人本深情多种风格，打造Z世代最亲近的"官方人格"</p>
-                            </div>
-                            <div>
-                                <div class="image-container mb-2">
-                                    <img src="images/ip/duo.jpg" alt="多儿" class="rounded">
-                                </div>
-                                <p><span class="font-medium">多儿（多邻国）：</span>从"发疯催学习"到"突然感性落泪"，全网公认最有梗的拟人角色</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- 第3部分：品牌与IP形象分离 -->
-            <section id="part3" class="mb-16 fade-in">
-                <div class="flex items-center mb-6">
-                    <i class="fas fa-object-ungroup text-3xl text-purple-500 mr-3"></i>
-                    <h2 class="text-2xl md:text-3xl font-bold section-title">第3部分：品牌与IP形象分离</h2>
-                </div>
-                
-                <div class="card bg-white dark:bg-gray-800 p-6 mb-8">
-                    <p class="text-lg font-medium text-purple-600 dark:text-purple-400">成为一个独立人格体，不是品牌的"代言人"</p>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="card bg-white dark:bg-gray-800 p-6">
-                        <h3 class="text-xl font-semibold mb-4 flex items-center">
-                            <i class="fas fa-question-circle text-red-500 mr-2"></i>
-                            为什么要品牌/IP分离？
-                        </h3>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
-                                <h4 class="font-medium mb-2">传统做法</h4>
-                                <ul class="space-y-2 text-sm">
-                                    <li class="flex items-start">
-                                        <i class="fas fa-circle text-gray-400 text-xs mt-1.5 mr-2"></i>
-                                        <span>品牌发言人，功能型、服务型（讲解、推荐）</span>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <i class="fas fa-circle text-gray-400 text-xs mt-1.5 mr-2"></i>
-                                        <span>只能活在产品和宣传中</span>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <i class="fas fa-circle text-gray-400 text-xs mt-1.5 mr-2"></i>
-                                        <span>用户是观众</span>
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <div class="p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
-                                <h4 class="font-medium mb-2">我们的做法</h4>
-                                <ul class="space-y-2 text-sm">
-                                    <li class="flex items-start">
-                                        <i class="fas fa-circle text-blue-500 text-xs mt-1.5 mr-2"></i>
-                                        <span>IP是"人格体"，有喜怒哀乐、生活琐事、自己的语气和主张</span>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <i class="fas fa-circle text-blue-500 text-xs mt-1.5 mr-2"></i>
-                                        <span>可以活在朋友圈、社交、UGC里</span>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <i class="fas fa-circle text-blue-500 text-xs mt-1.5 mr-2"></i>
-                                        <span>用户是搭子、是CP粉、是父母粉</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="card bg-white dark:bg-gray-800 p-6">
-                        <h3 class="text-xl font-semibold mb-4 flex items-center">
-                            <i class="fas fa-user-friends text-green-500 mr-2"></i>
-                            社交角色定位
-                        </h3>
-                        
-                        <div class="grid grid-cols-1 gap-4">
-                            <div class="p-4 bg-green-50 dark:bg-green-900/30 rounded-lg">
-                                <h4 class="font-medium mb-2">它是…</h4>
-                                <ul class="space-y-2">
-                                    <li class="flex items-start">
-                                        <i class="fas fa-check text-green-500 mr-2"></i>
-                                        <span>玩家朋友圈里的表情大师</span>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <i class="fas fa-check text-green-500 mr-2"></i>
-                                        <span>跟你一起吐槽bug的室友</span>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <i class="fas fa-check text-green-500 mr-2"></i>
-                                        <span>发疯不打草稿的搭子</span>
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <div class="p-4 bg-red-50 dark:bg-red-900/30 rounded-lg">
-                                <h4 class="font-medium mb-2">不再是…</h4>
-                                <ul class="space-y-2">
-                                    <li class="flex items-start">
-                                        <i class="fas fa-times text-red-500 mr-2"></i>
-                                        <span>官方客服</span>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <i class="fas fa-times text-red-500 mr-2"></i>
-                                        <span>品牌推广官</span>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <i class="fas fa-times text-red-500 mr-2"></i>
-                                        <span>公关文案</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
-                    <div class="card bg-white dark:bg-gray-800 p-6">
-                        <h3 class="text-xl font-semibold mb-4 flex items-center">
-                            <i class="fas fa-cogs text-blue-500 mr-2"></i>
-                            操作方式
-                        </h3>
-                        
-                        <ul class="space-y-3">
-                            <li class="flex items-start">
-                                <i class="fas fa-angle-right text-blue-500 mr-2 mt-1"></i>
-                                <span>开设独立账号和子栏目</span>
-                            </li>
-                            <li class="flex items-start">
-                                <i class="fas fa-angle-right text-blue-500 mr-2 mt-1"></i>
-                                <span>可以独立发布内容，与品牌账号做"互动"而不是"归属"</span>
-                            </li>
-                            <li class="flex items-start">
-                                <i class="fas fa-angle-right text-blue-500 mr-2 mt-1"></i>
-                                <span>强化IP人格感</span>
-                            </li>
-                            <li class="flex items-start">
-                                <i class="fas fa-angle-right text-blue-500 mr-2 mt-1"></i>
-                                <span>让用户愿意互动，而非"为品牌站台"</span>
-                            </li>
-                        </ul>
-                    </div>
-                    
-                    <div class="card bg-white dark:bg-gray-800 p-6">
-                        <h3 class="text-xl font-semibold mb-4 flex items-center">
-                            <i class="fas fa-thumbs-up text-green-500 mr-2"></i>
-                            这套机制的好处
-                        </h3>
-                        
-                        <ul class="space-y-3">
-                            <li class="flex items-start">
-                                <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center mr-3 flex-shrink-0">
-                                    <i class="fas fa-film text-blue-600 dark:text-blue-400"></i>
-                                </div>
-                                <div>
-                                    <p class="font-medium">内容维度变多</p>
-                                    <p class="text-sm">可以做表情包、漫画、Vlog、情绪语录、短剧，而不是只能讲产品</p>
-                                </div>
-                            </li>
-                            <li class="flex items-start">
-                                <div class="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center mr-3 flex-shrink-0">
-                                    <i class="fas fa-share-alt text-purple-600 dark:text-purple-400"></i>
-                                </div>
-                                <div>
-                                    <p class="font-medium">传播方式更轻</p>
-                                    <p class="text-sm">用户转发、玩梗，不会觉得在给品牌"打广告"</p>
-                                </div>
-                            </li>
-                            <li class="flex items-start">
-                                <div class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center mr-3 flex-shrink-0">
-                                    <i class="fas fa-dollar-sign text-green-600 dark:text-green-400"></i>
-                                </div>
-                                <div>
-                                    <p class="font-medium">商业路径更长</p>
-                                    <p class="text-sm">IP可以独立出周边，甚至未来跨品牌联名</p>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- 第4部分：长期运营规划 -->
-            <section id="part4" class="mb-16 fade-in">
-                <div class="flex items-center mb-6">
-                    <i class="fas fa-calendar-alt text-3xl text-green-500 mr-3"></i>
-                    <h2 class="text-2xl md:text-3xl font-bold section-title">第4部分：长期运营规划</h2>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                    <div class="card bg-white dark:bg-gray-800 p-6">
-                        <h3 class="text-xl font-semibold mb-4 flex items-center">
-                            <i class="fas fa-stream text-blue-500 mr-2"></i>
-                            常态化内容
-                        </h3>
-                        
-                        <div class="p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
-                            <h4 class="font-medium mb-2">"Bit酱的日常生活"</h4>
-                            <p>表情包/漫画/朋友圈/贴纸/语录初上线</p>
-                        </div>
-                    </div>
-                    
-                    <div class="card bg-white dark:bg-gray-800 p-6">
-                        <h3 class="text-xl font-semibold mb-4 flex items-center">
-                            <i class="fas fa-tasks text-purple-500 mr-2"></i>
-                            实操（省成本版）
-                        </h3>
-                        
-                        <ol class="space-y-3 list-decimal pl-5">
-                            <li>由ai生成形象，筛选终稿</li>
-                            <li>根据终稿，由ai生成表情包、漫画等素材</li>
-                            <li>分发渠道：公众号、小红书、B站</li>
-                            <li>每月沉淀用户反馈 + 数据复盘</li>
-                        </ol>
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-                    <div class="card bg-white dark:bg-gray-800 p-6">
-                        <h3 class="text-xl font-semibold mb-4 flex items-center">
-                            <i class="fas fa-bullhorn text-yellow-500 mr-2"></i>
-                            传播增强机制
-                        </h3>
-                        
-                        <ul class="space-y-3">
-                            <li class="flex items-center">
-                                <i class="fas fa-fire text-red-500 mr-2"></i>
-                                <span>热点追踪</span>
-                            </li>
-                            <li class="flex items-center">
-                                <i class="fas fa-calendar-day text-blue-500 mr-2"></i>
-                                <span>月度主题（生日）日</span>
-                            </li>
-                            <li class="flex items-center">
-                                <i class="fas fa-users text-green-500 mr-2"></i>
-                                <span>UGC话题</span>
-                            </li>
-                        </ul>
-                    </div>
-                    
-                    <div class="card bg-white dark:bg-gray-800 p-6">
-                        <h3 class="text-xl font-semibold mb-4 flex items-center">
-                            <i class="fas fa-store text-purple-500 mr-2"></i>
-                            商业化尝试
-                        </h3>
-                        
-                        <ul class="space-y-3">
-                            <li class="flex items-center">
-                                <i class="fas fa-tshirt text-pink-500 mr-2"></i>
-                                <span>定制周边</span>
-                            </li>
-                            <li class="flex items-center">
-                                <i class="fas fa-handshake text-blue-500 mr-2"></i>
-                                <span>联合活动</span>
-                            </li>
-                        </ul>
-                    </div>
-                    
-                    <div class="card bg-white dark:bg-gray-800 p-6">
-                        <h3 class="text-xl font-semibold mb-4 flex items-center">
-                            <i class="fas fa-id-card text-green-500 mr-2"></i>
-                            案例展示
-                        </h3>
-                        
-                        <p class="font-medium mb-2">名字：8bit</p>
-                        <p class="mb-3">设计展示：</p>
-                        
-                        <div class="grid grid-cols-2 gap-3 mb-4">
-                            <div class="image-container">
-                                <img src="images/ip/1.png" alt="8bit设计1" class="rounded">
-                            </div>
-                            <div class="image-container">
-                                <img src="images/ip/2.png
-                                " alt="8bit设计2" class="rounded">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="card bg-white dark:bg-gray-800 p-6">
-                    <h3 class="text-xl font-semibold mb-4 flex items-center">
-                        <i class="fas fa-robot text-blue-500 mr-2"></i>
-                        AI生成内容展示
-                    </h3>
-                    
-                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                        <div class="image-container">
-                            <img src="images/ip/3.png" alt="AI生成内容1" class="rounded">
-                        </div>
-                        <div class="image-container">
-                            <img src="images/ip/4.png" alt="AI生成内容2" class="rounded">
-                        </div>
-                        <div class="image-container">
-                            <img src="images/ip/5.png" alt="AI生成内容3" class="rounded">
-                        </div>
-                        <div class="image-container">
-                            <img src="images/ip/6.png" alt="AI生成内容5" class="rounded">
-                        </div>
-                        <div class="image-container">
-                            <img src="images/ip/7.png" alt="AI生成内容6" class="rounded">
-                        </div>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- 第5部分：最终目标 -->
-            <section id="part5" class="mb-16 fade-in">
-                <div class="flex items-center mb-6">
-                    <i class="fas fa-flag-checkered text-3xl text-red-500 mr-3"></i>
-                    <h2 class="text-2xl md:text-3xl font-bold section-title">第5部分：最终目标</h2>
-                </div>
-                
-                <div class="card bg-white dark:bg-gray-800 p-6">
-                    <p class="text-lg mb-4">IP将不再是品牌的传播工具，而是一个能自驱成长的"虚拟IP合伙人"：</p>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="p-5 bg-gradient-to-br from-blue-500 to-blue-700 text-white rounded-lg">
-                            <div class="flex items-center mb-3">
-                                <i class="fas fa-film text-3xl mr-3"></i>
-                                <h3 class="text-xl font-semibold">在内容上</h3>
-                            </div>
-                            <p>成为游戏圈文化的共鸣符号</p>
-                        </div>
-                        
-                        <div class="p-5 bg-gradient-to-br from-purple-500 to-purple-700 text-white rounded-lg">
-                            <div class="flex items-center mb-3">
-                                <i class="fas fa-users text-3xl mr-3"></i>
-                                <h3 class="text-xl font-semibold">在社交上</h3>
-                            </div>
-                            <p>成为玩家关系的情绪纽带</p>
-                        </div>
-                        
-                        <div class="p-5 bg-gradient-to-br from-green-500 to-green-700 text-white rounded-lg">
-                            <div class="flex items-center mb-3">
-                                <i class="fas fa-shopping-cart text-3xl mr-3"></i>
-                                <h3 class="text-xl font-semibold">在商业上</h3>
-                            </div>
-                            <p>成为带动手柄、周边、联名破圈的爆点资产</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </main>
+    <div id="page-manage" class="page">
+        <h1>习惯管理</h1>
+        <div class="card bg-blue" onclick="showDialog('new_habit')" style="margin-bottom: 24px; align-items: center; padding: 30px; cursor: pointer;">
+            <div style="font-size: 3rem; line-height: 1;">+</div>
+            <div style="font-weight: 700; margin-top: 10px;">创建新习惯</div>
+        </div>
         
-        <footer class="bg-gray-100 dark:bg-gray-800 py-8">
-            <div class="container mx-auto px-4">
-                <div class="border-t border-gray-300 dark:border-gray-700 pt-6">
-                    <div class="flex flex-col md:flex-row justify-between items-center">
-                        <div class="mb-4 md:mb-0">
-                            <h3 class="text-lg font-semibold mb-2">作者信息</h3>
-                            <p>作者姓名: 袁帅</p>
-                        </div>
-                        <div class="flex items-center space-x-4">
-                            <a href="#part1" class="text-blue-600 dark:text-blue-400 hover:underline">回到顶部</a>
-                            <button id="themeToggleFooter" class="p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition">
-                                <i class="fas fa-moon dark:text-white"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </footer>
+        <h2>进行中</h2>
+        <div id="manage-active-list" class="card-list"></div>
+
+        <h2 style="margin-top:40px; opacity:0.5;">归档箱</h2>
+        <details>
+            <summary>已归档的习惯 <span id="archive-count">0</span></summary>
+            <div id="manage-archive-list" class="archived-list"></div>
+        </details>
+
+        <div class="card" style="margin-top:40px; background:#eee;" onclick="showDialog('export')">
+            <div style="font-weight:700; text-align:center;">📤 备份数据 (导出)</div>
+        </div>
+        <div class="card" style="margin-top:10px; background:#eee;" onclick="showDialog('import')">
+            <div style="font-weight:700; text-align:center;">📥 恢复数据 (导入)</div>
+        </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/preline@1.9.0/dist/preline.js"></script>
-    <script>
-        // 密码验证
-        const passwordModal = document.getElementById('passwordModal');
-        const mainContent = document.getElementById('mainContent');
-        const passwordInput = document.getElementById('passwordInput');
-        const submitPassword = document.getElementById('submitPassword');
-        const passwordError = document.getElementById('passwordError');
+    <div id="page-profile" class="page">
+        <h1>我的成就</h1>
         
-        const correctPassword = '8bitdo2013';
-        
-        // 检查本地存储是否已验证
-        if (localStorage.getItem('passwordVerified') === 'true') {
-            passwordModal.classList.add('hidden');
-            mainContent.classList.remove('hidden');
-        }
-        
-        submitPassword.addEventListener('click', checkPassword);
-        passwordInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                checkPassword();
-            }
-        });
-        
-        function checkPassword() {
-            if (passwordInput.value === correctPassword) {
-                passwordModal.classList.add('hidden');
-                mainContent.classList.remove('hidden');
-                localStorage.setItem('passwordVerified', 'true');
-                
-                // 添加淡入动画
-                const sections = document.querySelectorAll('section');
-                sections.forEach((section, index) => {
-                    setTimeout(() => {
-                        section.classList.add('fade-in');
-                    }, index * 200);
-                });
-            } else {
-                passwordError.classList.remove('hidden');
-                passwordInput.value = '';
-                passwordInput.focus();
-                
-                // 震动效果
-                passwordInput.classList.add('animate-shake');
-                setTimeout(() => {
-                    passwordInput.classList.remove('animate-shake');
-                }, 500);
-            }
-        }
-        
-        // 深色/浅色模式切换
-        const themeToggle = document.getElementById('themeToggle');
-        const themeToggleFooter = document.getElementById('themeToggleFooter');
-        const body = document.body;
-        
-        // 检查系统偏好
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            body.classList.remove('light');
-            body.classList.add('dark');
-            updateThemeIcons(true);
-        }
-        
-        // 检查本地存储的主题设置
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) {
-            if (savedTheme === 'dark') {
-                body.classList.remove('light');
-                body.classList.add('dark');
-                updateThemeIcons(true);
-            } else {
-                body.classList.remove('dark');
-                body.classList.add('light');
-                updateThemeIcons(false);
-            }
-        }
-        
-        function toggleTheme() {
-            if (body.classList.contains('dark')) {
-                body.classList.remove('dark');
-                body.classList.add('light');
-                localStorage.setItem('theme', 'light');
-                updateThemeIcons(false);
-            } else {
-                body.classList.remove('light');
-                body.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
-                updateThemeIcons(true);
-            }
-        }
-        
-        function updateThemeIcons(isDark) {
-            const moonIcon = '<i class="fas fa-moon"></i>';
-            const sunIcon = '<i class="fas fa-sun"></i>';
+        <div class="card-list">
+            <div class="card" style="flex-direction: row; align-items: center; gap: 20px; padding: 20px;">
+                <div style="width: 60px; height: 60px; background: #000; border-radius: 50%; display:flex; justify-content:center; align-items:center; color:white; font-size:1.5rem;">☻</div>
+                <div>
+                    <div style="font-weight: 900; font-size: 1.5rem;">Habit User</div>
+                    <div style="font-size: 0.9rem; color: #999;" id="total-stats">统计加载中...</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge-header">
+                    <h3>里程碑 Milestones</h3>
+                    <div class="badge-toggle-btn" onclick="toggleGrid('milestone-grid', this)">查看全部</div>
+                </div>
+                <div class="badge-grid collapsed" id="milestone-grid"></div>
+            </div>
+
+            <div class="card">
+                <div class="badge-header">
+                    <h3>特殊成就 Achievements</h3>
+                    <div class="badge-toggle-btn" onclick="toggleGrid('achievement-grid', this)">查看全部</div>
+                </div>
+                <div class="badge-grid collapsed" id="achievement-grid"></div>
+            </div>
             
-            themeToggle.innerHTML = isDark ? sunIcon : moonIcon;
-            themeToggleFooter.innerHTML = isDark ? sunIcon : moonIcon;
-        }
-        
-        themeToggle.addEventListener('click', toggleTheme);
-        themeToggleFooter.addEventListener('click', toggleTheme);
-        
-        // 平滑滚动
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
+             <div class="card" onclick="showDialog('reset')" style="background:#eee; color:#FF3B30; align-items:center; padding:15px;">
+                <div style="font-weight:700;">⚠ 清空所有数据</div>
+            </div>
+            
+             <div class="card" onclick="showDialog('contact')" style="background:#eee; color:#333; align-items:center; padding:15px; margin-top: -10px;">
+                <div style="font-weight:700;">💬 学习交流区</div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="tab-bar">
+        <div class="tab-item active" onclick="switchTab('tracker', this)"><div class="tab-icon" style="background: var(--c-lemon);"></div><span>列表</span></div>
+        <div class="tab-item" onclick="switchTab('manage', this)"><div class="tab-icon" style="background: var(--c-taro);"></div><span>管理</span></div>
+        <div class="tab-item" onclick="switchTab('profile', this)"><div class="tab-icon" style="background: var(--c-blue);"></div><span>我的</span></div>
+    </nav>
+
+    <div id="habit-modal" class="modal">
+        <div class="modal-header">
+            <h2 id="modal-title" style="margin:0; font-size:2rem;"></h2>
+            <div class="close-btn" onclick="closeModal()">✕</div>
+        </div>
+        <div class="modal-content">
+            <div class="view-toggle">
+                <div class="view-btn active" onclick="switchView('grid')" id="btn-view-grid">近期视图</div>
+                <div class="view-btn" onclick="switchView('year')" id="btn-view-year">年度视图</div>
+            </div>
+
+            <div id="view-grid-container">
+                <div class="card full" id="modal-heatmap-card" style="min-height:200px; justify-content:center; margin-bottom:15px; align-items:center;">
+                    <div class="recent-grid" id="modal-recent-grid"></div>
+                    <div class="label" style="text-align:center; margin-top:15px;">近14天状态</div>
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                    <div class="card bg-taro"><div class="label">当前连胜</div><div class="big-num" id="modal-streak">0</div></div>
+                    <div class="card" style="background:#eee;"><div class="label">历史累计</div><div class="big-num" id="modal-total" style="color:#999;">0</div></div>
+                </div>
+            </div>
+
+            <div id="view-year-container" style="display:none;">
+                <div class="year-tabs-container" id="year-tabs"></div>
+                <div class="card full" style="overflow:hidden; margin-bottom:20px;">
+                    <div class="year-grid-container"><div class="year-grid" id="year-heatmap"></div></div>
+                </div>
                 
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
-            });
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="label">年度完成率</div><div class="stat-val" id="stat-year-rate">0%</div></div>
+                    <div class="stat-card"><div class="label">最长连胜</div><div class="stat-val" id="stat-year-streak">0</div></div>
+                    <div class="stat-card"><div class="label">月均打卡</div><div class="stat-val" id="stat-year-avg">0</div></div>
+                    <div class="stat-card"><div class="label">该年总计</div><div class="stat-val" id="stat-year-total">0</div></div>
+                </div>
+
+                <div class="card full" style="margin-top:20px; background:#333; color:white;">
+                    <div class="label" style="opacity:0.6;">生涯汇总</div>
+                    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:15px;">
+                        <div><div style="font-size:2rem; font-weight:900;" id="stat-life-days">0</div><div style="font-size:0.8rem; opacity:0.6;">自 <span id="stat-life-start">--</span></div></div>
+                        <div style="text-align:right;"><div style="font-size:2rem; font-weight:900;" id="stat-life-total">0</div><div style="font-size:0.8rem; opacity:0.6;">总打卡次数</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="check-btn-container" id="check-btn-container">
+            <button id="btn-checkin" class="big-check-btn" onclick="handleModalCheckIn()"><span>⚪</span> 长按打卡</button>
+        </div>
+    </div>
+
+    <div id="custom-dialog" class="dialog-overlay" onclick="closeDialog(event)">
+        <div class="dialog-card" onclick="event.stopPropagation()">
+            <div id="dialog-content"></div>
+        </div>
+    </div>
+    
+    <div id="toast" class="toast">已复制到剪贴板</div>
+
+</div>
+
+<script>
+    // --- 核心数据 ---
+    let habits = [];
+    let currentHabitId = null;
+    let pendingDeleteId = null;
+    let selectedYearMode = 'rolling';
+    
+    const todayStr = new Date().toISOString().split('T')[0];
+    const colors = ['bg-lemon', 'bg-taro', 'bg-blue', 'bg-green', 'bg-pink', 'bg-orange'];
+    const MILESTONES = [3, 7, 21, 30, 60, 100, 180, 365, 500, 800, 1000, 3000];
+    const ACHIEVEMENTS = [
+        { id: 'first_blood', icon: '🐣', name: '初出茅庐', permanent: true },
+        { id: 'early_bird', icon: '🌅', name: '早起鸟', permanent: false },
+        { id: 'night_owl', icon: '🦉', name: '夜猫子', permanent: false },
+        { id: 'double_kill', icon: '✌️', name: '双响炮', permanent: false },
+        { id: 'triple_kill', icon: '⚡️', name: '三连击', permanent: false },
+        { id: 'perfect_week', icon: '🔥', name: '完美周', permanent: false },
+        { id: 'perfect_month', icon: '🗓️', name: '完美月', permanent: false },
+        { id: 'weekend_warrior', icon: '🛡️', name: '周末战士', permanent: false },
+        { id: 'phoenix', icon: '🦅', name: '浴火重生', permanent: false },
+        { id: 'minimalist', icon: '📦', name: '极简主义', permanent: true },
+        { id: 'habit_master', icon: '👑', name: '习惯大师', permanent: false },
+        { id: 'cleaner', icon: '🧹', name: '断舍离', permanent: true }
+    ];
+    let permAchieve = { first_blood: false, minimalist: false, cleaner: false };
+
+    // --- 数据 ---
+    function loadData() {
+        const saved = localStorage.getItem('habit_v6_data');
+        const savedPerm = localStorage.getItem('habit_v6_perm');
+        if (saved) habits = JSON.parse(saved);
+        if (savedPerm) permAchieve = JSON.parse(savedPerm);
+        if(!saved && !savedPerm) habits = [{ id: 1, name: "早起", created: todayStr, archived: false, history: {} }];
+        renderAll();
+    }
+    function saveData() {
+        localStorage.setItem('habit_v6_data', JSON.stringify(habits));
+        localStorage.setItem('habit_v6_perm', JSON.stringify(permAchieve));
+        renderAll();
+    }
+    function renderAll() { renderTrackerList(); renderManage(); renderProfile(); }
+
+    // --- 列表 ---
+    function renderTrackerList() {
+        const list = document.getElementById('habit-list');
+        const empty = document.getElementById('empty-state');
+        list.innerHTML = '';
+        const active = habits.filter(h => !h.archived);
+        if(active.length === 0) { empty.style.display='block'; return; } else { empty.style.display='none'; }
+        active.forEach((h, idx) => {
+            const color = colors[idx % colors.length];
+            const stats = calculateStats(h);
+            const isDone = !!h.history[todayStr];
+            list.innerHTML += `
+            <div class="card full ${color}" onclick="openModal(${h.id})" style="cursor:pointer;">
+                <div class="list-card-header"><span class="habit-name">${h.name}</span><span style="background:rgba(0,0,0,0.1); padding:5px 10px; border-radius:20px; font-weight:700; font-size:0.8rem;">${isDone ? '已完成' : '去打卡'}</span></div>
+                <div class="mini-stats"><div class="mini-stat-item"><span class="mini-stat-val">${stats.streak}</span><span class="mini-stat-lbl">STREAK</span></div><div class="mini-stat-item" style="opacity:0.6;"><span class="mini-stat-val">${stats.total}</span><span class="mini-stat-lbl">TOTAL</span></div></div>
+            </div>`;
         });
+    }
+
+    // --- 详情 ---
+    const modal = document.getElementById('habit-modal');
+    function openModal(id) { currentHabitId=id; selectedYearMode = 'rolling'; switchView('grid'); updateModalContent(); modal.classList.add('open'); }
+    function closeModal() { modal.classList.remove('open'); currentHabitId=null; }
+    function switchView(mode) {
+        document.getElementById('view-grid-container').style.display = mode==='grid'?'block':'none';
+        document.getElementById('view-year-container').style.display = mode==='year'?'block':'none';
+        document.getElementById('btn-view-grid').className = mode==='grid'?'view-btn active':'view-btn';
+        document.getElementById('btn-view-year').className = mode==='year'?'view-btn active':'view-btn';
+        document.getElementById('check-btn-container').style.display = mode==='grid'?'flex':'none';
+        if(mode==='year') { renderYearTabs(); renderYearView(); }
+    }
+    function updateModalContent() {
+        if(!currentHabitId) return;
+        const h = habits.find(i=>i.id===currentHabitId);
+        const stats = calculateStats(h);
+        const isDone = !!h.history[todayStr];
+        const color = colors[habits.indexOf(h) % colors.length];
         
-        // 图片加载错误处理
-        document.querySelectorAll('img').forEach(img => {
-            img.onerror = function() {
-                this.src = 'https://via.placeholder.com/300x200?text=图片加载失败';
-            };
+        document.getElementById('modal-title').innerText = h.name;
+        document.getElementById('modal-streak').innerText = stats.streak;
+        document.getElementById('modal-total').innerText = stats.total;
+        document.getElementById('modal-heatmap-card').className = `card full ${color}`;
+
+        const grid = document.getElementById('modal-recent-grid'); grid.innerHTML='';
+        for(let i=13; i>=0; i--){
+            const d=new Date(); d.setDate(d.getDate()-i); const k=d.toISOString().split('T')[0];
+            const active = !!h.history[k]; const isToday = (k === todayStr);
+            grid.innerHTML += `<div class="recent-block ${active?'active':''} ${isToday&&!active?'today':''}" style="background:${active?'rgba(0,0,0,0.2)':'rgba(0,0,0,0.05)'}; color:${active?'rgba(0,0,0,0.5)':'rgba(0,0,0,0.2)'}">${d.getDate()}</div>`;
+        }
+
+        const btn = document.getElementById('btn-checkin');
+        if(isDone) { btn.classList.add('checked'); btn.innerHTML='<span>✓</span> 今日已完成'; }
+        else { btn.classList.remove('checked'); btn.innerHTML='<span>⚪</span> 长按打卡'; }
+        if(document.getElementById('view-year-container').style.display==='block') { renderYearView(); }
+    }
+
+    // --- 年度 ---
+    function renderYearTabs() {
+        const h = habits.find(i=>i.id===currentHabitId);
+        const tabs = document.getElementById('year-tabs'); tabs.innerHTML = '';
+        tabs.innerHTML += `<div class="year-tab ${selectedYearMode==='rolling'?'active':''}" onclick="switchYearMode('rolling')">近一年</div>`;
+        const createYear = new Date(h.created).getFullYear(); const currentYear = new Date().getFullYear();
+        for(let y=currentYear; y>=createYear; y--) { tabs.innerHTML += `<div class="year-tab ${selectedYearMode===y?'active':''}" onclick="switchYearMode(${y})">${y}</div>`; }
+    }
+    function switchYearMode(mode) { selectedYearMode = mode; renderYearTabs(); renderYearView(); }
+    function renderYearView() {
+        if(!currentHabitId) return;
+        const h = habits.find(i=>i.id===currentHabitId);
+        const container = document.getElementById('year-heatmap'); container.innerHTML='';
+        const colorClass = colors[habits.indexOf(h) % colors.length];
+        const hexMap = {'bg-lemon':'#EBFF00','bg-taro':'#C8B6FF','bg-blue':'#4A90E2','bg-green':'#34C759','bg-pink':'#FF2D55','bg-orange':'#FF9500'};
+        const activeColor = hexMap[colorClass] || '#000';
+
+        let startDate, endDate;
+        if(selectedYearMode === 'rolling') { endDate = new Date(); startDate = new Date(); startDate.setDate(endDate.getDate() - 364); if(startDate < new Date(h.created)) startDate = new Date(h.created); } 
+        else { startDate = new Date(selectedYearMode, 0, 1); endDate = new Date(selectedYearMode, 11, 31); const now = new Date(); if(endDate > now) endDate = now; if(startDate < new Date(h.created)) startDate = new Date(h.created); }
+
+        let loopDate = new Date(startDate); let lastMonth = -1; let totalRangeDays = 0; let activeCount = 0; let maxStreak = 0; let currentStreak = 0;
+        
+        while(loopDate <= endDate) {
+            const k = loopDate.toISOString().split('T')[0]; const isActive = !!h.history[k]; const currentMonth = loopDate.getMonth();
+            if(lastMonth !== -1 && currentMonth !== lastMonth) { container.innerHTML += `<div class="month-separator"></div>`; }
+            container.innerHTML += `<div class="year-dot" style="background:${isActive ? activeColor : '#eee'}"></div>`;
+            totalRangeDays++; if(isActive) { activeCount++; currentStreak++; if(currentStreak > maxStreak) maxStreak = currentStreak; } else { currentStreak = 0; }
+            lastMonth = currentMonth; loopDate.setDate(loopDate.getDate() + 1);
+        }
+        setTimeout(()=>{document.querySelector('.year-grid-container').scrollLeft = 10000;}, 50);
+
+        const monthsPassed = Math.max(1, totalRangeDays / 30);
+        document.getElementById('stat-year-rate').innerText = (totalRangeDays>0 ? Math.round((activeCount/totalRangeDays)*100) : 0) + '%';
+        document.getElementById('stat-year-streak').innerText = maxStreak;
+        document.getElementById('stat-year-avg').innerText = (activeCount / monthsPassed).toFixed(1);
+        document.getElementById('stat-year-total').innerText = activeCount;
+
+        const lifeStart = new Date(h.created);
+        document.getElementById('stat-life-days').innerText = (Math.floor((new Date() - lifeStart)/(1000*60*60*24)) + 1) + ' 天';
+        document.getElementById('stat-life-start').innerText = h.created;
+        document.getElementById('stat-life-total').innerText = Object.keys(h.history).length;
+    }
+
+    function handleModalCheckIn() {
+        if(!currentHabitId) return;
+        const h = habits.find(i=>i.id===currentHabitId);
+        if(h.history[todayStr]) delete h.history[todayStr];
+        else { h.history[todayStr] = new Date().toTimeString().slice(0,5); permAchieve.first_blood = true; }
+        saveData(); updateModalContent();
+    }
+
+    // --- 个人 ---
+    function renderProfile() {
+        let totalGlobal = 0; habits.forEach(h => totalGlobal += Object.keys(h.history).length);
+        document.getElementById('total-stats').innerText = `累计打卡: ${totalGlobal}`;
+        const mileGrid = document.getElementById('milestone-grid'); mileGrid.innerHTML = '';
+        MILESTONES.forEach(num => {
+            const unlocked = totalGlobal >= num;
+            mileGrid.innerHTML += `<div class="badge ${unlocked?'unlocked gold':''}" onclick="showDialog('badge', {icon:'${num}', name:'里程碑 ${num}', desc:'历史累计总打卡达到 ${num} 次', unlocked:${unlocked}})"><div class="badge-icon" style="font-weight:900; font-size:1rem;">${num}</div><div class="badge-text">次</div></div>`;
         });
-    </script>
+        const achGrid = document.getElementById('achievement-grid'); achGrid.innerHTML = '';
+        const status = calculateAchievementStatus();
+        ACHIEVEMENTS.forEach(ach => {
+            const unlocked = status[ach.id];
+            achGrid.innerHTML += `<div class="badge ${unlocked?'unlocked':''}" onclick="showDialog('badge', {icon:'${ach.icon}', name:'${ach.name}', desc:'${getAchDesc(ach.id)}', unlocked:${unlocked}})"><div class="badge-icon">${ach.icon}</div><div class="badge-text">${ach.name}</div></div>`;
+        });
+    }
+
+    // --- 弹窗逻辑 (V6.1 增强版) ---
+    const dialog = document.getElementById('custom-dialog');
+    const dialogContent = document.getElementById('dialog-content');
+
+    function closeDialog(e) { if(e) e.stopPropagation(); dialog.style.display = 'none'; pendingDeleteId = null; }
+
+    function showDialog(type, data) {
+        let html = '';
+        if (type === 'badge') {
+            html = `<div class="dialog-icon">${data.icon}</div><div class="dialog-title">${data.name}</div><div class="dialog-status-tag" style="background:${data.unlocked?'#E8FFE8':'#eee'}; color:${data.unlocked?'#34C759':'#999'}">${data.unlocked ? '✅ 已解锁' : '🔒 未解锁'}</div><div class="dialog-desc">${data.desc}</div><button class="dialog-btn btn-confirm" onclick="closeDialog()">我知道了</button>`;
+        } else if (type === 'new_habit') {
+            html = `<div class="dialog-title">创建新习惯</div><input type="text" id="dialog-input-val" class="dialog-input" placeholder="例如：早起晨跑" autofocus><div class="dialog-btn-group"><button class="dialog-btn btn-cancel" onclick="closeDialog()">取消</button><button class="dialog-btn btn-confirm" onclick="confirmNewHabit()">确定</button></div>`;
+        } else if (type === 'delete_confirm') {
+            pendingDeleteId = data;
+            html = `<div class="dialog-title">删除习惯</div><div class="dialog-desc" style="color:#FF3B30;">此操作不可恢复，确定要删除吗？</div><div class="dialog-btn-group"><button class="dialog-btn btn-cancel" onclick="closeDialog()">取消</button><button class="dialog-btn btn-danger" onclick="executeDelete()">删除</button></div>`;
+        } else if (type === 'reset') {
+            html = `<div class="dialog-title">清空数据</div><div class="dialog-desc" style="color:#FF3B30;">此操作将永久删除所有习惯和历史记录，无法撤销！</div><div class="dialog-btn-group"><button class="dialog-btn btn-cancel" onclick="closeDialog()">取消</button><button class="dialog-btn btn-danger" onclick="executeReset()">清空</button></div>`;
+        } else if (type === 'contact') {
+            html = `<div class="dialog-title">制作者微信</div><div class="dialog-desc" style="font-size:1.5rem; font-weight:900; color:var(--c-blue); margin:20px 0; cursor:pointer;" onclick="copyContact('Glimmer-0000')">Glimmer-0000</div><div class="dialog-desc" style="font-size:0.8rem;">一起交流习惯养成、Ai开发，点击上方微信号可复制</div><button class="dialog-btn btn-confirm" onclick="closeDialog()">关闭</button>`;
+        } 
+        
+        // V6.1 增强导出
+        else if (type === 'export') {
+            const json = JSON.stringify({ h: habits, p: permAchieve });
+            // 将数据暂存到内存，供按钮调用
+            window.tempExportData = json;
+            html = `
+                <div class="dialog-title">备份数据</div>
+                <div class="dialog-desc">请选择一种方式保存您的数据：</div>
+                <div class="dialog-btn-vertical">
+                    <button class="dialog-btn btn-action" onclick="copyExportData()">📋 一键复制到剪贴板</button>
+                    <button class="dialog-btn btn-action-outline" onclick="downloadBackupFile()">💾 导出为 .txt 文件</button>
+                </div>
+                <div class="small-tip">推荐保存为文件，数据更安全</div>
+                <button class="dialog-btn btn-cancel" style="margin-top:15px" onclick="closeDialog()">关闭</button>
+            `;
+        } 
+        
+        // V6.1 增强导入
+        else if (type === 'import') {
+            html = `
+                <div class="dialog-title">恢复数据</div>
+                <div class="dialog-desc" style="color:red;">⚠️ 此操作将覆盖当前所有数据！</div>
+                
+                <button class="dialog-btn btn-action" onclick="triggerFileSelect()">📂 选择备份文件导入...</button>
+                
+                <div class="dialog-divider"><span>或</span></div>
+                
+                <textarea id="dialog-text-val" class="dialog-textarea" placeholder="在此粘贴文本代码..."></textarea>
+                <div class="dialog-btn-group">
+                    <button class="dialog-btn btn-cancel" onclick="closeDialog()">取消</button>
+                    <button class="dialog-btn btn-confirm" onclick="confirmTextImport()">确认文本恢复</button>
+                </div>
+                <div class="small-tip" style="margin-top:10px">一键粘贴到新浏览器导入或者通过txt导出导入</div>
+            `;
+        }
+
+        dialogContent.innerHTML = html; dialog.style.display = 'flex';
+        const input = document.getElementById('dialog-input-val'); if(input) setTimeout(() => input.focus(), 100);
+    }
+
+    // --- 导出/导入 功能实现 ---
+    
+    // 1. 复制文本
+    function copyExportData() {
+        copyContact(window.tempExportData); // 复用复制函数
+        closeDialog();
+    }
+
+    // 2. 下载文件
+    function downloadBackupFile() {
+        const data = window.tempExportData;
+        const blob = new Blob([data], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        const date = new Date().toISOString().split('T')[0];
+        a.download = `Habit_Backup_${date}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        closeDialog();
+    }
+
+    // 3. 触发文件选择
+    function triggerFileSelect() {
+        document.getElementById('import-file').click();
+    }
+
+    // 4. 处理文件读取
+    function handleFileSelect(input) {
+        const file = input.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const content = e.target.result;
+            processImport(content);
+        };
+        reader.readAsText(file);
+        // 清空 input 防止重复选择同文件不触发 change
+        input.value = ''; 
+    }
+
+    // 5. 确认文本导入
+    function confirmTextImport() {
+        const val = document.getElementById('dialog-text-val').value;
+        if(val) processImport(val);
+    }
+
+    // 核心导入逻辑
+    function processImport(jsonString) {
+        try {
+            const json = JSON.parse(jsonString);
+            if(json.h) { 
+                habits = json.h; 
+                permAchieve = json.p || permAchieve; 
+                saveData(); 
+                alert("恢复成功！"); 
+                location.reload(); 
+            } else {
+                alert("数据格式不正确");
+            }
+        } catch(e) { 
+            alert("代码格式错误或文件损坏"); 
+        }
+    }
+
+    // --- 其他功能 ---
+    function confirmNewHabit() { const val = document.getElementById('dialog-input-val').value; if(val) { habits.push({id:Date.now(), name:val, created:todayStr, archived:false, history:{}}); saveData(); closeDialog(); } }
+    function triggerDelete(id) { showDialog('delete_confirm', id); }
+    function executeDelete() { if(pendingDeleteId) { habits = habits.filter(h => h.id !== pendingDeleteId); permAchieve.cleaner = true; saveData(); closeDialog(); } }
+    function executeReset() { localStorage.clear(); location.reload(); }
+    function copyContact(text) { navigator.clipboard.writeText(text).then(() => { const toast = document.getElementById('toast'); toast.classList.add('show'); setTimeout(() => { toast.classList.remove('show'); }, 2000); }).catch(err => { alert("复制失败，请手动复制"); }); }
+    function renderManage() {
+        const active = document.getElementById('manage-active-list'); const archive = document.getElementById('manage-archive-list'); active.innerHTML=''; archive.innerHTML=''; let arcCount = 0;
+        habits.forEach(h => {
+            const html = `<div class="card" style="padding:20px; margin-bottom:10px; flex-direction:row; justify-content:space-between; align-items:center;"><div style="font-weight:800; ${h.archived?'opacity:0.5':''}">${h.name}</div><div style="display:flex; gap:10px;"><div style="background:#eee; padding:8px 15px; border-radius:20px; font-size:0.8rem; font-weight:700;" onclick="toggleArchive(${h.id})">${h.archived?'恢复':'归档'}</div>${h.archived?`<div style="background:#ffebeb; color:red; padding:8px 15px; border-radius:20px; font-size:0.8rem;" onclick="triggerDelete(${h.id})">删除</div>`:''}</div></div>`;
+            if(h.archived) { archive.innerHTML+=html; arcCount++; } else active.innerHTML+=html;
+        }); document.getElementById('archive-count').innerText = arcCount;
+    }
+    function toggleArchive(id) { const h=habits.find(i=>i.id===id); if(h){h.archived=!h.archived; if(h.archived) permAchieve.minimalist=true; saveData();} }
+    function switchTab(p,el){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.getElementById('page-'+p).classList.add('active');document.querySelectorAll('.tab-item').forEach(x=>x.classList.remove('active'));el.classList.add('active');}
+    function resetAllData(){ showDialog('reset'); }
+    function calculateStats(h) { let s=0;let d=new Date();if(!h.history[todayStr])d.setDate(d.getDate()-1);while(h.history[d.toISOString().split('T')[0]]){s++;d.setDate(d.getDate()-1);}return {streak:s, total:Object.keys(h.history).length}; }
+    function calculateAchievementStatus() { return { first_blood: permAchieve.first_blood, early_bird: checkGlobalEarlyBird(), night_owl: checkGlobalNightOwl(), double_kill: checkDailyCount() >= 2, triple_kill: checkDailyCount() >= 3, perfect_week: checkGlobalPerfect(7), perfect_month: checkGlobalPerfect(30), weekend_warrior: checkWeekendWarrior(), phoenix: checkGlobalPhoenix(), minimalist: permAchieve.minimalist, habit_master: habits.filter(h=>!h.archived).length >= 5, cleaner: permAchieve.cleaner }; }
+    function checkGlobalEarlyBird() { for(let i=0; i<5; i++) { const d=new Date();d.setDate(d.getDate()-i);const k=d.toISOString().split('T')[0];let has=false;for(let h of habits){if(h.history[k]&&h.history[k]<"08:00"){has=true;break;}}if(!has)return false;}return true; }
+    function checkGlobalNightOwl() { for(let i=0; i<3; i++) { const d=new Date();d.setDate(d.getDate()-i);const k=d.toISOString().split('T')[0];let has=false;for(let h of habits){if(h.history[k]&&h.history[k]>="23:00"){has=true;break;}}if(!has)return false;}return true; }
+    function checkDailyCount() { let c=0; habits.forEach(h=>{if(h.history[todayStr])c++}); return c; }
+    function checkGlobalPerfect(d){ for(let i=0;i<d;i++){const dt=new Date();dt.setDate(dt.getDate()-i);const k=dt.toISOString().split('T')[0];if(!habits.some(h=>!!h.history[k]))return false;}return true;}
+    function checkWeekendWarrior(){let w=0;let d=new Date();while(w<8){const day=d.getDay();if(day===0||day===6){const k=d.toISOString().split('T')[0];if(!habits.some(h=>!!h.history[k]))return false;w++;}d.setDate(d.getDate()-1);if((new Date()-d)>3456000000)break;}return true;}
+    function checkGlobalPhoenix(){return habits.some(h=>{const s=calculateStats(h);if(s.streak<3)return false;const d=new Date();d.setDate(d.getDate()-s.streak);const k=d.toISOString().split('T')[0];return !h.history[k];});}
+    function toggleGrid(id, btn) { const grid = document.getElementById(id); if(grid.classList.contains('collapsed')) { grid.classList.remove('collapsed'); btn.innerText = '收起'; } else { grid.classList.add('collapsed'); btn.innerText = '查看全部'; } }
+    function getAchDesc(id) { const map = { first_blood: '完成第1次打卡', early_bird: '连续5天在08:00前打卡', night_owl: '连续3天在23:00后打卡', double_kill: '单日完成2个习惯', triple_kill: '单日完成3个习惯', perfect_week: '过去7天每天都有打卡', perfect_month: '过去30天每天都有打卡', weekend_warrior: '连续4个周末无缺席', phoenix: '断签后重新连续打卡3天', minimalist: '使用过归档功能', habit_master: '拥有5个及以上进行中的习惯', cleaner: '删除过一个习惯' }; return map[id] || ''; }
+
+    loadData();
+</script>
 </body>
 </html>

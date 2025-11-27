@@ -7,13 +7,14 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BentoHabit">
     <link rel="apple-touch-icon" id="dynamic-icon" href="">
-    <title>Habit Tracker V6.5</title>
+    <title>Habit Tracker V6.6</title>
     <style>
         :root {
             --bg-color: #F2F2F7;
             --card-bg: #FFFFFF;
             --text-main: #000000;
             --text-sub: #8E8E93;
+            /* 配色盘 */
             --c-lemon: #EBFF00;
             --c-taro: #C8B6FF;
             --c-blue: #4A90E2;
@@ -125,7 +126,7 @@
         .big-check-btn:active { transform: scale(0.95); }
         .big-check-btn.checked { background: var(--c-green); color: white; }
 
-        /* --- V6.5 徽章样式：克制美学 --- */
+        /* --- V6.6 徽章样式：空气感糖果色 --- */
         .badge-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .badge-toggle-btn { font-size: 0.8rem; font-weight: 700; color: var(--c-blue); cursor: pointer; }
         
@@ -137,25 +138,19 @@
         .badge-grid.collapsed { height: 90px; }
         
         .badge { 
-            /* 统一背景色：浅灰 */
             aspect-ratio: 1; background: #F0F0F0; border-radius: 50%; 
             display: flex; flex-direction: column; justify-content: center; align-items: center; 
-            /* 未解锁：透明度降低，灰色滤镜 */
             opacity: 0.4; filter: grayscale(1); transition: all 0.3s; 
-            cursor: pointer; box-shadow: none; 
-            color: #000; /* 默认文字黑色 */
+            cursor: pointer; box-shadow: none; color: #000;
         }
         
         .badge.unlocked { 
-            /* 解锁后：完全不透明，去滤镜，背景依然保持灰色 */
             opacity: 1; filter: grayscale(0); 
-            /* 颜色由 inline-style 控制，只改变图标和文字的颜色 */
-            background: #F5F5F7 !important; 
+            /* 颜色由 inline-style 控制背景和文字颜色 */
         }
         
         .badge-icon svg { width: 24px; height: 24px; fill: currentColor; }
         .badge-icon { margin-bottom: 2px; font-weight: 900; font-size: 1rem;}
-        
         .badge-text { font-size: 0.6rem; font-weight: 700; text-align: center; line-height: 1.2; margin-top: 2px; }
         
         /* 归档 & 导航 */
@@ -198,10 +193,8 @@
         .dialog-input { width: 100%; padding: 15px; background: #F2F2F7; border: none; border-radius: 12px; font-size: 1rem; margin-bottom: 20px; outline: none; }
         .dialog-textarea { width: 100%; height: 80px; padding: 10px; background: #F2F2F7; border: none; border-radius: 12px; font-size: 0.8rem; margin-bottom: 20px; resize: none; outline: none; font-family: monospace; }
         
-        /* V6.5 修复：确保按钮组居中 */
         .dialog-btn-group { display: flex; gap: 10px; width: 100%; justify-content: center; }
         .dialog-btn-vertical { display: flex; flex-direction: column; gap: 10px; width: 100%; }
-        
         .dialog-btn { flex: 1; padding: 12px; border-radius: 12px; font-weight: 700; border: none; font-size: 1rem; cursor: pointer; display:flex; justify-content: center; align-items: center; gap: 8px;}
         .btn-cancel { background: #F2F2F7; color: black; }
         .btn-confirm { background: var(--c-blue); color: white; }
@@ -313,7 +306,7 @@
 </div>
 
 <script>
-    // --- V6.5 App Icon: Light Gray BG + Thick Gradient Ring ---
+    // --- V6.6 App Icon: High Saturation Gradient Ring ---
     (function generateIcon(){
         const canvas = document.createElement('canvas');
         canvas.width = 512; canvas.height = 512;
@@ -324,15 +317,16 @@
         ctx.fillRect(0,0,512,512);
         
         // 2. 绘制渐变圆环
-        const cx = 256, cy = 256, r = 120; // 留白较多，半径120
+        const cx = 256, cy = 256, r = 120; 
         
+        // 高饱和度渐变色
         const grad = ctx.createLinearGradient(0, 0, 512, 512);
-        grad.addColorStop(0, '#EBFF00'); // 黄
-        grad.addColorStop(0.5, '#C8B6FF'); // 紫
-        grad.addColorStop(1, '#4A90E2'); // 蓝
+        grad.addColorStop(0, '#FFE600'); // 亮黄
+        grad.addColorStop(0.5, '#AA00FF'); // 深紫
+        grad.addColorStop(1, '#0066FF'); // 亮蓝
         
         ctx.strokeStyle = grad;
-        ctx.lineWidth = 80; // 粗线条
+        ctx.lineWidth = 80; 
         ctx.lineCap = 'round';
         
         ctx.beginPath();
@@ -375,7 +369,16 @@
     const todayStr = getTodayStr();
     
     const colors = ['bg-lemon', 'bg-taro', 'bg-blue', 'bg-green', 'bg-pink', 'bg-orange'];
-    const colorValues = ['#EBFF00', '#C8B6FF', '#4A90E2', '#34C759', '#FF2D55', '#FF9500']; 
+    
+    // V6.6: 定义每个颜色对应的【淡色背景】和【深色文字】
+    const colorThemes = [
+        { bg: '#FEFFD6', text: '#B8C900' }, // Lemon
+        { bg: '#F3EFFF', text: '#8B5CF6' }, // Taro
+        { bg: '#E6F2FF', text: '#007AFF' }, // Blue
+        { bg: '#E6FFEA', text: '#00C853' }, // Green
+        { bg: '#FFE6EB', text: '#FF2D55' }, // Pink
+        { bg: '#FFF4E6', text: '#FF9500' }  // Orange
+    ];
 
     const MILESTONES = [3, 7, 21, 30, 60, 100, 180, 365, 500, 800, 1000, 3000];
     const ACHIEVEMENTS = [
@@ -421,7 +424,7 @@
         });
     }
 
-    // --- 个人中心与徽章 (V6.5 视觉降噪) ---
+    // --- 个人中心与徽章 (V6.6 空气感配色) ---
     function renderProfile() {
         let totalGlobal = 0; habits.forEach(h => totalGlobal += Object.keys(h.history).length);
         document.getElementById('total-stats').innerText = `累计打卡: ${totalGlobal}`;
@@ -429,10 +432,10 @@
         const mileGrid = document.getElementById('milestone-grid'); mileGrid.innerHTML = '';
         MILESTONES.forEach(num => {
             const unlocked = totalGlobal >= num;
-            // V6.5: 背景永远是灰色，解锁后文字金色
-            const style = unlocked ? 'color:#FF9500;' : '';
+            // 里程碑：解锁后淡金底+深金字
+            const style = unlocked ? 'background:#FFFBE6; color:#FF9500; opacity:1; filter:grayscale(0);' : '';
             mileGrid.innerHTML += `
-            <div class="badge ${unlocked?'unlocked':''}" style="${style}" onclick="openBadgeModal('milestone', ${num}, ${unlocked})">
+            <div class="badge" style="${style}" onclick="openBadgeModal('milestone', ${num}, ${unlocked})">
                 <div class="badge-icon" style="font-size:1rem; font-weight:900; margin-top:4px;">${num}</div>
                 <div class="badge-text">次</div>
             </div>`;
@@ -442,12 +445,12 @@
         const status = calculateAchievementStatus();
         ACHIEVEMENTS.forEach((ach, index) => {
             const unlocked = status[ach.id];
-            // V6.5: 背景永远是灰色，解锁后文字使用彩色
-            const color = unlocked ? colorValues[index % colorValues.length] : '';
-            const style = unlocked ? `color:${color};` : '';
+            // V6.6: 使用 Tint & Shade 配色
+            const theme = colorThemes[index % colorThemes.length];
+            const style = unlocked ? `background:${theme.bg}; color:${theme.text}; opacity:1; filter:grayscale(0);` : '';
             
             achGrid.innerHTML += `
-            <div class="badge ${unlocked?'unlocked':''}" style="${style}" onclick="openBadgeModal('achievement', '${ach.id}', ${unlocked})">
+            <div class="badge" style="${style}" onclick="openBadgeModal('achievement', '${ach.id}', ${unlocked})">
                 <div class="badge-icon">${SVG_ICONS[ach.id]}</div>
                 <div class="badge-text">${ach.name}</div>
             </div>`;

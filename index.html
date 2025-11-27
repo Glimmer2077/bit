@@ -7,14 +7,13 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BentoHabit">
     <link rel="apple-touch-icon" id="dynamic-icon" href="">
-    <title>Habit Tracker V6.3</title>
+    <title>Habit Tracker V6.4</title>
     <style>
         :root {
             --bg-color: #F2F2F7;
             --card-bg: #FFFFFF;
             --text-main: #000000;
             --text-sub: #8E8E93;
-            /* 配色盘 */
             --c-lemon: #EBFF00;
             --c-taro: #C8B6FF;
             --c-blue: #4A90E2;
@@ -63,7 +62,6 @@
         }
         .card.full { width: 100%; }
         
-        /* 颜色辅助类 */
         .bg-lemon { background-color: var(--c-lemon); }
         .bg-taro { background-color: var(--c-taro); }
         .bg-blue { background-color: var(--c-blue); color: white; }
@@ -74,7 +72,6 @@
         .big-num { font-size: 3.5rem; font-weight: 900; line-height: 1; letter-spacing: -0.05em; }
         .label { font-size: 0.8rem; font-weight: 700; opacity: 0.7; text-transform: uppercase; margin-top: auto; }
 
-        /* 列表卡片 */
         .list-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
         .habit-name { font-size: 1.8rem; font-weight: 800; line-height: 1.1; }
         .mini-stats { display: flex; gap: 20px; }
@@ -82,7 +79,7 @@
         .mini-stat-val { font-size: 1.5rem; font-weight: 900; }
         .mini-stat-lbl { font-size: 0.7rem; font-weight: 600; opacity: 0.6; }
 
-        /* 底部详情弹窗 */
+        /* 详情弹窗 */
         .modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); z-index: 1000;
             display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -128,13 +125,14 @@
         .big-check-btn:active { transform: scale(0.95); }
         .big-check-btn.checked { background: var(--c-green); color: white; }
 
-        /* --- V6.3 徽章样式重构 (扁平化) --- */
+        /* --- 徽章样式 V6.4 --- */
         .badge-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .badge-toggle-btn { font-size: 0.8rem; font-weight: 700; color: var(--c-blue); cursor: pointer; }
         
         .badge-grid { 
             display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
             height: auto; overflow: hidden; 
+            padding: 4px; margin: -4px;
         }
         .badge-grid.collapsed { height: 90px; }
         
@@ -142,23 +140,21 @@
             aspect-ratio: 1; background: #F0F0F0; border-radius: 50%; 
             display: flex; flex-direction: column; justify-content: center; align-items: center; 
             opacity: 0.4; filter: grayscale(1); transition: all 0.3s; 
-            cursor: pointer;
-            /* 移除阴影，解决裁切问题 */
-            box-shadow: none; 
+            cursor: pointer; box-shadow: none; 
         }
         
-        .badge.unlocked { 
-            opacity: 1; filter: grayscale(0); 
-            /* 颜色将由 JS 动态注入背景色，文字变黑 */
-            color: #000 !important;
-        }
+        .badge.unlocked { opacity: 1; filter: grayscale(0); color: #000 !important; }
         
-        .badge-icon svg { width: 32px; height: 32px; fill: currentColor; }
-        .badge-icon { margin-bottom: 2px; }
-        /* 里程碑的数字样式 */
-        .badge-num { font-size: 1.5rem; font-weight: 900; line-height: 1; }
+        /* V6.4: 缩小图标 */
+        .badge-icon svg { width: 24px; height: 24px; fill: currentColor; }
+        .badge-icon { margin-bottom: 2px; font-weight: 900; font-size: 1rem;}
         
         .badge-text { font-size: 0.6rem; font-weight: 700; text-align: center; line-height: 1.2; margin-top: 2px; }
+        
+        /* 金色里程碑 */
+        .badge.gold { background: linear-gradient(135deg, #FFF 10%, #FFF8D6 100%); }
+        .badge.gold .badge-icon { color: #FF9500; }
+        .badge.gold .badge-text { color: #FF9500; }
         
         /* 归档 & 导航 */
         details summary { list-style: none; padding: 20px; background: #E5E5EA; border-radius: var(--radius-box); font-weight: 700; color: #666; display: flex; justify-content: space-between; align-items: center; }
@@ -177,7 +173,7 @@
         .tab-icon { width: 24px; height: 24px; background: currentColor; margin-bottom: 4px; border-radius: 6px; transition: transform 0.2s; }
         .tab-item.active .tab-icon { transform: scale(1.1); }
 
-        /* 自定义通用弹窗 */
+        /* 弹窗 */
         .dialog-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.4); backdrop-filter: blur(5px);
@@ -193,9 +189,7 @@
 
         .dialog-icon { margin-bottom: 10px; color: #333; }
         .dialog-icon svg { width: 60px; height: 60px; fill: currentColor; }
-        /* 弹窗里的巨大数字 */
         .dialog-big-num { font-size: 5rem; font-weight: 900; line-height: 1; color: #000; margin-bottom: 10px; }
-        
         .dialog-title { font-size: 1.5rem; font-weight: 900; margin-bottom: 10px; }
         .dialog-desc { font-size: 0.9rem; color: #666; line-height: 1.5; margin-bottom: 20px; }
         .dialog-status-tag { padding: 4px 12px; border-radius: 100px; font-size: 0.8rem; font-weight: 700; margin-bottom: 15px; }
@@ -251,9 +245,7 @@
         <h1>我的成就</h1>
         <div class="card-list">
             <div class="card" style="flex-direction: row; align-items: center; gap: 20px; padding: 20px;">
-                <div style="width: 60px; height: 60px; border-radius: 50%; overflow:hidden; background: #eee;">
-                    <svg viewBox="0 0 100 100"><rect width="100" height="100" fill="#000"/><circle cx="50" cy="50" r="20" fill="#EBFF00"/><rect x="70" y="20" width="20" height="20" rx="10" fill="#C8B6FF"/></svg>
-                </div>
+                <div style="width: 60px; height: 60px; background: #000; border-radius: 50%; display:flex; justify-content:center; align-items:center; color:white; font-size:1.5rem;">☻</div>
                 <div><div style="font-weight: 900; font-size: 1.5rem;">Habit User</div><div style="font-size: 0.9rem; color: #999;" id="total-stats">统计加载中...</div></div>
             </div>
             <div class="card">
@@ -309,7 +301,7 @@
                 </div>
             </div>
         </div>
-        <div class="check-btn-container" id="check-btn-container"><button id="btn-checkin" class="big-check-btn" onclick="handleModalCheckIn()"><span>⚪</span> 长按打卡</button></div>
+        <div class="check-btn-container" id="check-btn-container"><button id="btn-checkin" class="big-check-btn" onclick="handleModalCheckIn()"><span>⚪</span> 立即打卡</button></div>
     </div>
 
     <div id="custom-dialog" class="dialog-overlay" onclick="closeDialog(event)"><div class="dialog-card" onclick="event.stopPropagation()"><div id="dialog-content"></div></div></div>
@@ -317,50 +309,45 @@
 </div>
 
 <script>
-    // --- V6.3 App Icon: NotebookLM Style ---
+    // --- V6.4 App Icon: Gray Background + Colorful Linear Infinity ---
     (function generateIcon(){
         const canvas = document.createElement('canvas');
         canvas.width = 512; canvas.height = 512;
         const ctx = canvas.getContext('2d');
         
-        // 1. 背景：柠檬黄
-        ctx.fillStyle = '#EBFF00'; 
+        // 1. 背景：深空灰
+        ctx.fillStyle = '#2C2C2E'; 
         ctx.fillRect(0,0,512,512);
         
-        // 2. 黑色线性 Bento 格子
-        ctx.strokeStyle = '#000000';
-        ctx.lineWidth = 30;
-        ctx.lineJoin = 'round';
+        // 2. 绘制无限符号
+        const grad = ctx.createLinearGradient(100, 256, 412, 256);
+        grad.addColorStop(0, '#EBFF00'); // 黄
+        grad.addColorStop(0.5, '#C8B6FF'); // 紫
+        grad.addColorStop(1, '#4A90E2'); // 蓝
+        
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 40;
         ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
         
-        // 绘制圆角大框
         ctx.beginPath();
-        ctx.roundRect(80, 80, 352, 352, 40);
+        ctx.moveTo(256, 256);
+        // 右边圆环
+        ctx.bezierCurveTo(356, 156, 456, 156, 456, 256);
+        ctx.bezierCurveTo(456, 356, 356, 356, 256, 256);
+        // 左边圆环
+        ctx.bezierCurveTo(156, 156, 56, 156, 56, 256);
+        ctx.bezierCurveTo(56, 356, 156, 356, 256, 256);
+        
         ctx.stroke();
-        
-        // 绘制分割线
-        ctx.beginPath();
-        ctx.moveTo(80, 256); ctx.lineTo(432, 256); // 横线
-        ctx.stroke();
-        
-        ctx.beginPath();
-        ctx.moveTo(256, 80); ctx.lineTo(256, 432); // 竖线
-        ctx.stroke();
-        
-        // 某个格子涂黑增加艺术感 (右下角)
-        ctx.fillStyle = '#000000';
-        ctx.beginPath();
-        // 微调填充位置避免压线
-        ctx.roundRect(256+15, 256+15, 176-15, 176-15, 25); 
-        ctx.fill();
 
         const dataURL = canvas.toDataURL('image/png');
         document.getElementById('dynamic-icon').href = dataURL;
     })();
 
-    // --- SVG 图标库 ---
+    // --- SVG 图标库 (20% smaller visually handled by CSS logic or reduced viewBox if needed, but CSS width is cleaner) ---
     const SVG_ICONS = {
-        milestone: '', // 里程碑不需要SVG，直接用数字
+        milestone: '', 
         first_blood: '<svg viewBox="0 0 24 24"><path d="M12 2C8.69 2 6 4.69 6 8v12c0 .55.45 1 1 1h10c.55 0 1-.45 1-1V8c0-3.31-2.69-6-6-6zm-2 8h4v2h-4v-2z"/></svg>',
         early_bird: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 2V4M12 20V22M4.22 4.22L5.64 5.64M18.36 18.36L19.78 19.78M2 12H4M20 12H22M4.22 19.78L5.64 18.36M18.36 5.64L19.78 4.22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
         night_owl: '<svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>',
@@ -390,7 +377,7 @@
     const todayStr = getTodayStr();
     
     const colors = ['bg-lemon', 'bg-taro', 'bg-blue', 'bg-green', 'bg-pink', 'bg-orange'];
-    const colorValues = ['#EBFF00', '#C8B6FF', '#4A90E2', '#34C759', '#FF2D55', '#FF9500']; // 对应的 hex 方便 JS 调用
+    const colorValues = ['#EBFF00', '#C8B6FF', '#4A90E2', '#34C759', '#FF2D55', '#FF9500']; 
 
     const MILESTONES = [3, 7, 21, 30, 60, 100, 180, 365, 500, 800, 1000, 3000];
     const ACHIEVEMENTS = [
@@ -436,7 +423,7 @@
         });
     }
 
-    // --- 个人中心与徽章 (V6.3 核心修复) ---
+    // --- 个人中心与徽章 (V6.4 修复) ---
     function renderProfile() {
         let totalGlobal = 0; habits.forEach(h => totalGlobal += Object.keys(h.history).length);
         document.getElementById('total-stats').innerText = `累计打卡: ${totalGlobal}`;
@@ -444,10 +431,10 @@
         const mileGrid = document.getElementById('milestone-grid'); mileGrid.innerHTML = '';
         MILESTONES.forEach(num => {
             const unlocked = totalGlobal >= num;
-            // V6.3: onclick 改为传递 ID，彻底修复代码泄露问题
+            // V6.4: 列表里显示小图标，点击才显示大数字
             mileGrid.innerHTML += `
             <div class="badge ${unlocked?'unlocked gold':''}" onclick="openBadgeModal('milestone', ${num}, ${unlocked})">
-                <div class="badge-num">${num}</div>
+                <div class="badge-icon" style="font-size:1rem; font-weight:900; margin-top:4px;">${num}</div>
                 <div class="badge-text">次</div>
             </div>`;
         });
@@ -457,8 +444,6 @@
         ACHIEVEMENTS.forEach((ach, index) => {
             const unlocked = status[ach.id];
             const bgColor = unlocked ? colorValues[index % colorValues.length] : '#F0F0F0';
-            
-            // V6.3: 动态注入背景色，去掉 box-shadow
             const style = unlocked ? `background:${bgColor};` : '';
             
             achGrid.innerHTML += `
@@ -469,17 +454,14 @@
         });
     }
 
-    // --- V6.3 新增：徽章详情弹窗处理函数 ---
     function openBadgeModal(type, id, unlocked) {
         let icon, title, desc, statusTag;
         
         if(type === 'milestone') {
-            // 里程碑：显示大数字
             title = `里程碑 ${id}`;
             desc = `历史累计总打卡达到 ${id} 次`;
             icon = `<div class="dialog-big-num">${id}</div>`;
         } else {
-            // 特殊成就：显示SVG
             const ach = ACHIEVEMENTS.find(a => a.id === id);
             title = ach.name;
             desc = getAchDesc(id);
@@ -495,17 +477,15 @@
             <div class="dialog-desc">${desc}</div>
             <button class="dialog-btn btn-confirm" onclick="closeDialog()">我知道了</button>
         `;
-        
         document.getElementById('dialog-content').innerHTML = html;
         document.getElementById('custom-dialog').style.display = 'flex';
     }
 
-    // --- 通用弹窗逻辑 ---
+    // --- 通用弹窗 ---
     const dialog = document.getElementById('custom-dialog'); const dialogContent = document.getElementById('dialog-content');
     function closeDialog(e) { if(e) e.stopPropagation(); dialog.style.display = 'none'; pendingDeleteId = null; }
     function showDialog(type, data) {
         let html = '';
-        // 这里只处理操作类弹窗，徽章弹窗由 openBadgeModal 接管
         if (type === 'new_habit') { html = `<div class="dialog-title">创建新习惯</div><input type="text" id="dialog-input-val" class="dialog-input" placeholder="例如：早起晨跑" autofocus><div class="dialog-btn-group"><button class="dialog-btn btn-cancel" onclick="closeDialog()">取消</button><button class="dialog-btn btn-confirm" onclick="confirmNewHabit()">确定</button></div>`;
         } else if (type === 'delete_confirm') { pendingDeleteId = data; html = `<div class="dialog-title">删除习惯</div><div class="dialog-desc" style="color:#FF3B30;">此操作不可恢复，确定要删除吗？</div><div class="dialog-btn-group"><button class="dialog-btn btn-cancel" onclick="closeDialog()">取消</button><button class="dialog-btn btn-danger" onclick="executeDelete()">删除</button></div>`;
         } else if (type === 'reset') { html = `<div class="dialog-title">清空数据</div><div class="dialog-desc" style="color:#FF3B30;">此操作将永久删除所有习惯和历史记录，无法撤销！</div><div class="dialog-btn-group"><button class="dialog-btn btn-cancel" onclick="closeDialog()">取消</button><button class="dialog-btn btn-danger" onclick="executeReset()">清空</button></div>`;
@@ -515,7 +495,7 @@
         dialogContent.innerHTML = html; dialog.style.display = 'flex'; const input = document.getElementById('dialog-input-val'); if(input) setTimeout(() => input.focus(), 100);
     }
 
-    // --- 其他辅助函数 (保持不变) ---
+    // --- 辅助函数 ---
     function copyExportData() { copyContact(window.tempExportData); closeDialog(); }
     function downloadBackupFile() { const data = window.tempExportData; const blob = new Blob([data], { type: 'text/plain' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `Habit_Backup_${todayStr}.txt`; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); closeDialog(); }
     function triggerFileSelect() { document.getElementById('import-file').click(); }
@@ -545,7 +525,7 @@
     function openModal(id) { currentHabitId=id; selectedYearMode = 'rolling'; switchView('grid'); updateModalContent(); modal.classList.add('open'); }
     function closeModal() { modal.classList.remove('open'); currentHabitId=null; }
     function switchView(mode) { document.getElementById('view-grid-container').style.display = mode==='grid'?'block':'none'; document.getElementById('view-year-container').style.display = mode==='year'?'block':'none'; document.getElementById('btn-view-grid').className = mode==='grid'?'view-btn active':'view-btn'; document.getElementById('btn-view-year').className = mode==='year'?'view-btn active':'view-btn'; document.getElementById('check-btn-container').style.display = mode==='grid'?'flex':'none'; if(mode==='year') { renderYearTabs(); renderYearView(); } }
-    function updateModalContent() { if(!currentHabitId) return; const h = habits.find(i=>i.id===currentHabitId); const stats = calculateStats(h); const isDone = !!h.history[todayStr]; const color = colors[habits.indexOf(h) % colors.length]; document.getElementById('modal-title').innerText = h.name; document.getElementById('modal-streak').innerText = stats.streak; document.getElementById('modal-total').innerText = stats.total; document.getElementById('modal-heatmap-card').className = `card full ${color}`; const grid = document.getElementById('modal-recent-grid'); grid.innerHTML=''; for(let i=13; i>=0; i--){ const d=new Date(); d.setDate(d.getDate()-i); const year = d.getFullYear(); const month = String(d.getMonth() + 1).padStart(2, '0'); const day = String(d.getDate()).padStart(2, '0'); const k = `${year}-${month}-${day}`; const active = !!h.history[k]; const isToday = (k === todayStr); grid.innerHTML += `<div class="recent-block ${active?'active':''} ${isToday&&!active?'today':''}" style="background:${active?'rgba(0,0,0,0.2)':'rgba(0,0,0,0.05)'}; color:${active?'rgba(0,0,0,0.5)':'rgba(0,0,0,0.2)'}">${d.getDate()}</div>`; } const btn = document.getElementById('btn-checkin'); if(isDone) { btn.classList.add('checked'); btn.innerHTML='<span>✓</span> 今日已完成'; } else { btn.classList.remove('checked'); btn.innerHTML='<span>⚪</span> 长按打卡'; } if(document.getElementById('view-year-container').style.display==='block') { renderYearView(); } }
+    function updateModalContent() { if(!currentHabitId) return; const h = habits.find(i=>i.id===currentHabitId); const stats = calculateStats(h); const isDone = !!h.history[todayStr]; const color = colors[habits.indexOf(h) % colors.length]; document.getElementById('modal-title').innerText = h.name; document.getElementById('modal-streak').innerText = stats.streak; document.getElementById('modal-total').innerText = stats.total; document.getElementById('modal-heatmap-card').className = `card full ${color}`; const grid = document.getElementById('modal-recent-grid'); grid.innerHTML=''; for(let i=13; i>=0; i--){ const d=new Date(); d.setDate(d.getDate()-i); const year = d.getFullYear(); const month = String(d.getMonth() + 1).padStart(2, '0'); const day = String(d.getDate()).padStart(2, '0'); const k = `${year}-${month}-${day}`; const active = !!h.history[k]; const isToday = (k === todayStr); grid.innerHTML += `<div class="recent-block ${active?'active':''} ${isToday&&!active?'today':''}" style="background:${active?'rgba(0,0,0,0.2)':'rgba(0,0,0,0.05)'}; color:${active?'rgba(0,0,0,0.5)':'rgba(0,0,0,0.2)'}">${d.getDate()}</div>`; } const btn = document.getElementById('btn-checkin'); if(isDone) { btn.classList.add('checked'); btn.innerHTML='<span>✓</span> 今日已完成'; } else { btn.classList.remove('checked'); btn.innerHTML='<span>⚪</span> 立即打卡'; } if(document.getElementById('view-year-container').style.display==='block') { renderYearView(); } }
     function renderYearTabs() { const h = habits.find(i=>i.id===currentHabitId); const tabs = document.getElementById('year-tabs'); tabs.innerHTML = ''; tabs.innerHTML += `<div class="year-tab ${selectedYearMode==='rolling'?'active':''}" onclick="switchYearMode('rolling')">近一年</div>`; const createYear = new Date(h.created).getFullYear(); const currentYear = new Date().getFullYear(); for(let y=currentYear; y>=createYear; y--) { tabs.innerHTML += `<div class="year-tab ${selectedYearMode===y?'active':''}" onclick="switchYearMode(${y})">${y}</div>`; } }
     function switchYearMode(mode) { selectedYearMode = mode; renderYearTabs(); renderYearView(); }
     function renderYearView() { if(!currentHabitId) return; const h = habits.find(i=>i.id===currentHabitId); const container = document.getElementById('year-heatmap'); container.innerHTML=''; const colorClass = colors[habits.indexOf(h) % colors.length]; const hexMap = {'bg-lemon':'#EBFF00','bg-taro':'#C8B6FF','bg-blue':'#4A90E2','bg-green':'#34C759','bg-pink':'#FF2D55','bg-orange':'#FF9500'}; const activeColor = hexMap[colorClass] || '#000'; let startDate, endDate; if(selectedYearMode === 'rolling') { endDate = new Date(); startDate = new Date(); startDate.setDate(endDate.getDate() - 364); if(startDate < new Date(h.created)) startDate = new Date(h.created); } else { startDate = new Date(selectedYearMode, 0, 1); endDate = new Date(selectedYearMode, 11, 31); const now = new Date(); if(endDate > now) endDate = now; if(startDate < new Date(h.created)) startDate = new Date(h.created); } let loopDate = new Date(startDate); let lastMonth = -1; let totalRangeDays = 0; let activeCount = 0; let maxStreak = 0; let currentStreak = 0; while(loopDate <= endDate) { const y = loopDate.getFullYear(); const m = String(loopDate.getMonth() + 1).padStart(2, '0'); const d = String(loopDate.getDate()).padStart(2, '0'); const k = `${y}-${m}-${d}`; const isActive = !!h.history[k]; const currentMonth = loopDate.getMonth(); if(lastMonth !== -1 && currentMonth !== lastMonth) { container.innerHTML += `<div class="month-separator"></div>`; } container.innerHTML += `<div class="year-dot" style="background:${isActive ? activeColor : '#eee'}"></div>`; totalRangeDays++; if(isActive) { activeCount++; currentStreak++; if(currentStreak > maxStreak) maxStreak = currentStreak; } else { currentStreak = 0; } lastMonth = currentMonth; loopDate.setDate(loopDate.getDate() + 1); } setTimeout(()=>{document.querySelector('.year-grid-container').scrollLeft = 10000;}, 50); const monthsPassed = Math.max(1, totalRangeDays / 30); document.getElementById('stat-year-rate').innerText = (totalRangeDays>0 ? Math.round((activeCount/totalRangeDays)*100) : 0) + '%'; document.getElementById('stat-year-streak').innerText = maxStreak; document.getElementById('stat-year-avg').innerText = (activeCount / monthsPassed).toFixed(1); document.getElementById('stat-year-total').innerText = activeCount; const lifeStart = new Date(h.created); document.getElementById('stat-life-days').innerText = (Math.floor((new Date() - lifeStart)/(1000*60*60*24)) + 1) + ' 天'; document.getElementById('stat-life-start').innerText = h.created; document.getElementById('stat-life-total').innerText = Object.keys(h.history).length; }
